@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>Panel de Confirmaciones · Boda Naiara & Guillermo</title>
+  <meta name="robots" content="noindex, nofollow" />
+  
+  <link rel="icon" type="image/svg+xml" href="assets/svg/vegvisir.svg" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/dashboard-style.css" />
+</head>
+<body>
+
+  <!-- Canvas de fondo -->
+  <canvas id="ember-canvas"></canvas>
+
+  <div class="page-wrapper">
+
+    <!-- BARRA SUPERIOR -->
+    <header class="viking-navbar scrolled">
+      <div class="nav-container">
+        <a href="index.html" class="nav-brand">
+          <span class="nav-logo-rune">ᚾ·ᚷ</span>
+          <span class="nav-names">Naiara & Guillermo</span>
+        </a>
+        <div style="display: flex; gap: 0.8rem; align-items: center;">
+          <a href="asistencia.html" class="btn-viking btn-viking-outline" style="min-height: 38px; padding: 0.35rem 0.9rem; font-size: 0.78rem;">
+            <span>Ir al Formulario</span>
+          </a>
+          <a href="index.html" class="btn-viking btn-viking-outline" style="min-height: 38px; padding: 0.35rem 0.9rem; font-size: 0.78rem;">
+            <span>← Ver Invitación</span>
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main class="dashboard-page">
+      <div class="container">
+        
+        <!-- CABECERA DEL PANEL -->
+        <div class="dash-header">
+          <div>
+            <div class="section-pretitle" style="justify-content: flex-start;">
+              <span class="rune">ᛟ</span>
+              <span>Control de Invitados · 22.05.2027</span>
+            </div>
+            <h1 class="dash-title">Panel de Asistencia</h1>
+          </div>
+
+          <div class="dash-actions">
+            <button type="button" id="btn-refresh-data" class="btn-viking btn-viking-outline" style="min-height: 42px; padding: 0.5rem 1rem; font-size: 0.82rem;">
+              <span>🔄 Actualizar</span>
+            </button>
+            <button type="button" id="btn-export-csv" class="btn-viking btn-viking-primary" style="min-height: 42px; padding: 0.5rem 1.2rem; font-size: 0.82rem;">
+              <span>📊 Exportar a Excel / CSV</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- TARJETAS DE MÉTRICAS -->
+        <div class="stats-grid">
+          <div class="stat-card highlight">
+            <div class="stat-label">Total Personas que Asisten</div>
+            <div class="stat-value" id="stat-total-people">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Adultos / Parejas</div>
+            <div class="stat-value" id="stat-total-adults">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Niños</div>
+            <div class="stat-value" id="stat-total-children">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">No Asistirán</div>
+            <div class="stat-value" id="stat-total-declined">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Con Alergias / Dietas</div>
+            <div class="stat-value" id="stat-total-allergies">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Total Respuestas</div>
+            <div class="stat-value" id="stat-total-resp">0</div>
+          </div>
+        </div>
+
+        <!-- BARRA DE HERRAMIENTAS: FILTROS Y BÚSQUEDA -->
+        <div class="dash-toolbar">
+          <div class="filter-tabs">
+            <button type="button" class="filter-btn active" data-filter="all">Todos</button>
+            <button type="button" class="filter-btn" data-filter="yes">Asisten</button>
+            <button type="button" class="filter-btn" data-filter="no">No Asisten</button>
+            <button type="button" class="filter-btn" data-filter="allergies">Con Alergias</button>
+          </div>
+
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="search-input" placeholder="Buscar por nombre o alergia..." />
+          </div>
+        </div>
+
+        <!-- TABLA DE RESULTADOS -->
+        <div class="table-container">
+          <table class="dash-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Invitado Principal</th>
+                <th>Estado</th>
+                <th>Acompañantes</th>
+                <th>Total</th>
+                <th>Alergia / Intolerancia</th>
+                <th>Fecha</th>
+              </tr>
+            </thead>
+            <tbody id="confirmations-tbody">
+              <!-- Rellenado dinámicamente por js/dashboard.js -->
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="viking-footer">
+      <div class="footer-names">Naiara & Guillermo · Panel de Gestión</div>
+      <p class="footer-quote">"El registro sagrado de los clanes"</p>
+    </footer>
+
+  </div>
+
+  <!-- BOTÓN FLOTANTE VOLVER ARRIBA -->
+  <button class="back-to-top" id="back-to-top" aria-label="Volver arriba">
+    <svg viewBox="0 0 24 24">
+      <path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/>
+    </svg>
+  </button>
+
+  <!-- MODAL / GATE DE ACCESO (Preparado para cuando se sincronice con Firebase Auth) -->
+  <div class="login-gate-overlay" id="login-gate">
+    <div class="login-card">
+      <img src="assets/svg/vegvisir.svg" style="width: 60px; height: 60px; margin-bottom: 1rem;" alt="" />
+      <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem; color: #fff;">Acceso al Panel</h3>
+      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+        Introduce la clave de acceso de Naiara y Guillermo para ver las confirmaciones:
+      </p>
+
+      <form id="admin-login-form">
+        <input 
+          type="password" 
+          id="adminPin" 
+          class="form-input" 
+          placeholder="Clave de acceso" 
+          required 
+          style="margin-bottom: 1rem; text-align: center; font-size: 1.1rem; letter-spacing: 0.15em;" 
+        />
+        <div id="login-err-msg" style="display: none; color: #ff6b6b; font-size: 0.85rem; margin-bottom: 1rem;"></div>
+        <button type="submit" class="btn-viking btn-viking-primary" style="width: 100%;">
+          <span>Entrar al Panel</span>
+        </button>
+      </form>
+      <div style="margin-top: 1.2rem;">
+        <a href="index.html" style="color: var(--text-muted); font-size: 0.82rem; text-decoration: none;">← Volver a la web</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase Scripts (Compat v9) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <!-- Lógica y configuración -->
+  <script src="js/config.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
+

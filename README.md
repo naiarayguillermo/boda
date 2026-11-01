@@ -1,0 +1,106 @@
+# ⚔️ Boda de Naiara & Guillermo · 22 de Mayo de 2027
+
+Invitación web de boda con estética nórdica/vikinga moderna, elegante y 100% optimizada para dispositivos móviles (Mobile-First) para **Naiara & Guillermo**.
+
+- **Fecha:** Sábado, 22 de Mayo de 2027
+- **Horarios:** Ceremonia a las 12:00h · Banquete y fiesta a las 14:00h
+- **Lugar:** [Asejar Viveros · La Hoya, Elche (Alicante)](https://maps.app.goo.gl/aNG3K9HyFQzcdcWY9)
+- **Confirmación:** Por favor, confirmar antes del 31 de Diciembre de 2026
+- **Tecnologías:** HTML5, CSS3 y JavaScript nativo (Vanilla), sin dependencias ni compiladores.
+
+---
+
+## 💻 Servidor Local
+
+Para previsualizar y probar la invitación en tu navegador antes de subirla o desplegarla:
+
+```bash
+python3 -m http.server 8080
+# o también:
+npx serve .
+```
+
+Una vez ejecutado el comando, abre en tu navegador:
+👉 **[http://localhost:8080](http://localhost:8080)**
+
+---
+
+## 📄 Páginas del Proyecto
+
+1. **`index.html` (Invitación Principal)**:
+   - Portada con cuenta atrás adaptativa hacia el 22/05/2027.
+   - Historia de los clanes.
+   - **Ubicación en Asejar Viveros**: mapa embebido, coordenadas GPS (`38°14'35.1"N 0°46'18.8"W`), botones directos con iconos SVG para Google Maps, Apple Maps y botón para copiar la dirección.
+   - Cronograma de la jornada.
+   - **Atavío de Gala**: Estructura preparada para integrar fotos y sugerencias de vestimenta y peinados (Hombre, Mujer, Niño).
+   - **Descanso**: Hoteles recomendados en Elche cercanos a la finca.
+   - Botón final hacia `asistencia.html`.
+
+2. **`asistencia.html` (Formulario de Confirmación)**:
+   - **Nombre y apellidos**.
+   - **¿Podrás asistir?** (Sí / No).
+   - **¿Vienes acompañado? (Checkbox)**: Al marcarlo permite añadir acompañantes con su nombre y selección de si es pareja/adulto o niño.
+   - **¿Alergia o intolerancia?**: Checkbox que despliega campo para especificar cuál.
+   - Sin campos innecesarios (eliminados correo, bus y música).
+
+3. **`dashboard.html` (Panel de Control de Asistencias)**:
+   - Resumen en tiempo real: Total confirmaciones, total personas que asisten, desglose de adultos, niños, no asistentes y personas con alergias.
+   - **Tabla interactiva**: Lista todos los invitados, estado, acompañantes, total de personas por grupo y detalles de intolerancias.
+   - Filtros rápidos (*Todos*, *Asisten*, *No Asisten*, *Con Alergias*) y barra de búsqueda en vivo.
+   - **Exportar a Excel / CSV** en un clic.
+   - Preparado con pantalla de acceso/login para cuando se vincule con Firebase Auth (por defecto en modo visualización directa en local).
+
+---
+
+## 🔥 Conexión con Firebase
+
+Tanto `asistencia.html` como `dashboard.html` están preparados para conectarse directamente a **Cloud Firestore**:
+
+1. Abre **[`js/firebase-config.js`](js/firebase-config.js)**.
+2. Añade tus credenciales de Firebase:
+   ```javascript
+   const FIREBASE_CONFIG = {
+     apiKey: "TU_API_KEY",
+     authDomain: "tu-proyecto.firebaseapp.com",
+     projectId: "tu-proyecto",
+     storageBucket: "tu-proyecto.appspot.com",
+     messagingSenderId: "...",
+     appId: "..."
+   };
+
+   const ENABLE_FIREBASE = true; // Activa Firebase
+   const REQUIRE_AUTH = true;    // Activa la pantalla de login para el dashboard
+   ```
+3. Reglas de Firestore recomendadas:
+   ```text
+   rules_version = '2';
+   service cloud.firestore {
+     match /databases/{database}/documents {
+       match /confirmaciones_boda/{document=**} {
+         allow create: if true;
+         allow read: if true; // O restringido a tu usuario autenticado
+         allow update, delete: if false;
+       }
+     }
+   }
+   ```
+*(Mientras `ENABLE_FIREBASE = false`, las confirmaciones se guardan localmente en tu navegador para que puedas probar el formulario y el dashboard al instante).*
+
+---
+
+## 🚀 Despliegue en GitHub Pages
+
+1. Sube los cambios al repositorio:
+   ```bash
+   git add .
+   git commit -m "Web de boda Naiara & Guillermo: Asistencia simplificada y Dashboard"
+   git push -u origin main
+   ```
+2. En GitHub:
+   - Ve a **Settings** > **Pages**.
+   - En **Source**, selecciona **Deploy from a branch**.
+   - Selecciona la rama `main` y `/ (root)`.
+3. Tu web estará disponible en:
+   - Web principal: `https://naiarayguillermo.github.io/boda/`
+   - Formulario: `https://naiarayguillermo.github.io/boda/asistencia.html`
+   - Dashboard: `https://naiarayguillermo.github.io/boda/dashboard.html`

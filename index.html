@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>Naiara & Guillermo · 22 de Mayo de 2027</title>
+  <meta name="description" content="Invitación de boda de Naiara & Guillermo · 22 de Mayo de 2027 en Asejar Viveros, Elche. Destinados por las Nornas, unidos bajo el firmamento de los Dioses." />
+
+  <!-- Open Graph para compartir en WhatsApp, Telegram y redes -->
+  <meta property="og:title" content="Boda Naiara & Guillermo · 22.05.2027" />
+  <meta property="og:description" content="Acompáñanos a celebrar nuestro gran festejo de boda en Asejar Viveros (Elche)." />
+  <meta property="og:type" content="website" />
+  
+  <!-- Favicon rúnico SVG -->
+  <link rel="icon" type="image/svg+xml" href="assets/svg/vegvisir.svg" />
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- Canvas interactivo de brasas nórdicas -->
+  <canvas id="ember-canvas"></canvas>
+
+  <!-- Telón de fondo para menú móvil (detrás de los links nítidos) -->
+  <div class="nav-backdrop" id="nav-backdrop"></div>
+
+  <div class="page-wrapper">
+
+    <!-- BARRA DE NAVEGACIÓN SUPERIOR -->
+    <header class="viking-navbar" id="viking-navbar">
+      <div class="nav-container">
+        <a href="#hero" class="nav-brand" aria-label="Inicio">
+          <span class="nav-logo-rune">ᚾ·ᚷ</span>
+          <span class="nav-names" data-bind="monogram">Naiara & Guillermo</span>
+        </a>
+
+        <!-- Botón Hamburguesa alineado a la derecha -->
+        <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menú de navegación">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+        <nav>
+          <ul class="nav-links" id="nav-links">
+            <li><a href="#historia">La Saga</a></li>
+            <li><a href="#ubicacion">Ubicación</a></li>
+            <li><a href="#cronograma">Horarios</a></li>
+            <li><a href="#atavio">Atavío</a></li>
+            <li><a href="#descanso">Descanso</a></li>
+            <li><a href="asistencia.html" class="nav-rsvp-btn">Confirmar Asistencia</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <!-- PORTADA / HERO -->
+    <section class="hero" id="hero">
+      <div class="hero-ornament-bg">
+        <img src="assets/svg/vegvisir.svg" alt="" width="520" height="520" />
+      </div>
+
+      <img src="assets/svg/vegvisir.svg" alt="Sello Vegvísir" class="hero-crest reveal" width="95" height="95" />
+
+      <p class="hero-tagline-top reveal" style="--delay: 0.1s">Unión Sagrada de Nuestros Clanes</p>
+      
+      <h1 class="hero-title reveal" style="--delay: 0.2s">
+        <span data-bind="brideName">Naiara</span>
+        <span class="ampersand">&</span>
+        <span data-bind="groomName">Guillermo</span>
+      </h1>
+
+      <p class="hero-subtitle reveal" style="--delay: 0.3s" data-bind="epicTagline">
+        Destinados por las Nornas, unidos bajo el firmamento de los Dioses
+      </p>
+
+      <div class="hero-date-badge reveal" style="--delay: 0.4s">
+        <span class="rune-icon">ᛉ</span>
+        <span class="date-text" data-bind="dateDisplayText">22 de Mayo de 2027</span>
+        <span class="rune-icon">ᚷ</span>
+      </div>
+
+      <!-- CONTADOR DE TIEMPO REGRESIVO -->
+      <div class="countdown-wrapper reveal" id="countdown-box" style="--delay: 0.5s">
+        <div class="countdown-unit">
+          <span class="rune-mark">ᛞ</span>
+          <div class="countdown-num" id="cd-days">--</div>
+          <div class="countdown-label">Días</div>
+        </div>
+        <div class="countdown-unit">
+          <span class="rune-mark">ᛏ</span>
+          <div class="countdown-num" id="cd-hours">--</div>
+          <div class="countdown-label">Horas</div>
+        </div>
+        <div class="countdown-unit">
+          <span class="rune-mark">ᛃ</span>
+          <div class="countdown-num" id="cd-mins">--</div>
+          <div class="countdown-label">Min</div>
+        </div>
+        <div class="countdown-unit">
+          <span class="rune-mark">ᛋ</span>
+          <div class="countdown-num" id="cd-secs">--</div>
+          <div class="countdown-label">Seg</div>
+        </div>
+      </div>
+
+      <div class="hero-actions reveal" style="--delay: 0.6s">
+        <a href="#ubicacion" class="btn-viking btn-viking-outline">
+          <span class="btn-icon-svg">
+            <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+          </span>
+          <span>Ver Ubicación</span>
+        </a>
+        <a href="asistencia.html" class="btn-viking btn-viking-primary">
+          <span class="btn-icon-svg">
+            <svg viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
+          </span>
+          <span>Confirmar Asistencia</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- SECCIÓN: NUESTRA SAGA -->
+    <section class="section" id="historia">
+      <div class="container">
+        <div class="section-header reveal">
+          <div class="section-pretitle">
+            <span class="rune">ᚠ</span>
+            <span>El Destino Forjado</span>
+            <span class="rune">ᚠ</span>
+          </div>
+          <h2 class="section-title">Nuestra Saga</h2>
+          <div class="viking-divider">
+            <img src="assets/svg/viking-divider.svg" alt="" />
+          </div>
+        </div>
+
+        <div class="story-wrapper reveal">
+          <blockquote class="story-quote">
+            "Donde se unen el valor y el amor verdadero, ningún vendaval puede quebrar la llama de los clanes."
+          </blockquote>
+          <p class="story-p">
+            Nuestros caminos no se cruzaron por azar. En las raíces de Yggdrasil, las tres Nornas hilaron un lazo dorado que unió nuestras vidas a través del tiempo y las distancias.
+          </p>
+          <p class="story-p">
+            El 22 de Mayo de 2027 sellaremos esa travesía con un juramento sagrado ante la naturaleza y todos vosotros: nuestra familia, amigos y clanes de vida. Alzaremos los cuernos al cielo para celebrar el inicio de nuestra mayor aventura.
+          </p>
+          <div class="story-signature">
+            ᚾ Naiara & Guillermo ᚷ
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN: UBICACIÓN (ASEJAR VIVEROS) -->
+    <section class="section" id="ubicacion">
+      <div class="container">
+        <div class="section-header reveal">
+          <div class="section-pretitle">
+            <span class="rune">ᛟ</span>
+            <span>El Enclave Sagrado</span>
+            <span class="rune">ᛟ</span>
+          </div>
+          <h2 class="section-title">El Lugar del Encuentro</h2>
+          <p class="section-subtitle">
+            Donde los clanes se reunirán para el juramento y el posterior festejo.
+          </p>
+          <div class="viking-divider">
+            <img src="assets/svg/viking-divider.svg" alt="" />
+          </div>
+        </div>
+
+        <!-- TARJETA DEL ENCLAVE CON MAPA EMBEBIDO -->
+        <div class="viking-card venue-showcase-card reveal">
+          <img src="assets/svg/knot-corner.svg" class="card-corner corner-tl" alt="" />
+          <img src="assets/svg/knot-corner.svg" class="card-corner corner-tr" alt="" />
+          <img src="assets/svg/knot-corner.svg" class="card-corner corner-bl" alt="" />
+          <img src="assets/svg/knot-corner.svg" class="card-corner corner-br" alt="" />
+
+          <div class="venue-header-badge">
+            <span>Enclave Nupcial</span>
+          </div>
+
+          <h3 class="venue-main-title" data-bind="venue.name">Asejar Viveros</h3>
+          <p class="venue-tagline" data-bind="venue.subtitle">El Oasis de los Dioses · La Hoya, Elche (Alicante)</p>
+
+          <div class="venue-coords-box" title="Coordenadas GPS">
+            <span>🧭</span>
+            <span data-bind="venue.coordinates">38°14'35.1"N 0°46'18.8"W</span>
+          </div>
+
+          <p class="venue-desc-text" data-bind="venue.description">
+            Un enclave natural rodeado de palmeras, vegetación mediterránea y espacios al aire libre donde celebraremos tanto el juramento sagrado como el gran banquete.
+          </p>
+
+          <!-- MAPA EMBEBIDO -->
+          <div class="map-frame-wrapper">
+            <iframe 
+              title="Ubicación de Asejar Viveros en Google Maps"
+              src="https://maps.google.com/maps?q=38.2430805,-0.7718989&amp;hl=es&amp;z=15&amp;output=embed"
+              loading="lazy"
+              allowfullscreen>
+            </iframe>
+          </div>
+
+          <!-- BOTONES DE ACCIÓN -->
+          <div class="map-actions-grid">
+            <a href="https://maps.app.goo.gl/aNG3K9HyFQzcdcWY9" target="_blank" rel="noopener noreferrer" class="btn-viking btn-viking-primary" data-bind="venue.mapsShortUrl">
+              <span class="btn-icon-svg">
+                <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+              </span>
+              <span>Abrir en Google Maps</span>
+            </a>
+
+            <a href="https://maps.apple.com/?q=38.2430805,-0.7718989" target="_blank" rel="noopener noreferrer" class="btn-viking btn-viking-outline" data-bind="venue.appleMapsUrl">
+              <span class="btn-icon-svg">
+                <svg viewBox="0 0 24 24"><path d="M20.5 3l-.16.03L15 5.1 9 3 3.36 4.9c-.21.07-.36.25-.36.48V20.5c0 .28.22.5.5.5l.16-.03L9 18.9l6 2.1 5.64-1.9c.21-.07.36-.25.36-.48V3.5c0-.28-.22-.5-.5-.5zM15 19l-6-2.11V5l6 2.11V19z"/></svg>
+              </span>
+              <span>Abrir en Apple Maps</span>
+            </a>
+
+            <button type="button" class="btn-viking btn-viking-outline" data-copy-target="venue-address-hidden" data-toast-msg="¡Dirección copiada al portapapeles!">
+              <span class="btn-icon-svg">
+                <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+              </span>
+              <span>Copiar Dirección</span>
+            </button>
+            <span id="venue-address-hidden" data-copy-val="Partida de La Hoya, Polígono 72, Parcela 83, 03294 La Hoya, Elche (Alicante)" style="display: none;"></span>
+          </div>
+        </div>
+
+        <!-- CEREMONIA (12:00h) & BANQUETE (14:00h) -->
+        <div class="conclaves-grid">
+          <div class="viking-card conclave-card reveal" style="--delay: 0.1s">
+            <img src="assets/svg/knot-corner.svg" class="card-corner corner-tl" alt="" />
+            <img src="assets/svg/knot-corner.svg" class="card-corner corner-tr" alt="" />
+            <img src="assets/svg/knot-corner.svg" class="card-corner corner-bl" alt="" />
+            <img src="assets/svg/knot-corner.svg" class="card-corner corner-br" alt="" />
+
+            <div>
+              <div class="conclave-icon-box">
+                <img src="assets/svg/rings-oath.svg" alt="Anillos" width="40" height="40" />
+              </div>
+              <span class="conclave-badge">La Ceremonia</span>
+              <h3 class="conclave-title" data-bind="ceremony.title">El Juramento de Sangre y Amor</h3>
+              <p class="conclave-place" data-bind="ceremony.placeName">Asejar Viveros · Zona de la Arboleda</p>
+              <div class="conclave-time">
+                <span class="rune">ᛏ</span>
+                <span data-bind="ceremony.time">12:00 Horas</span>
+              </div>
+              <p class="conclave-desc" data-bind="ceremony.description">
+                Bajo los cielos de Elche y rodeados de nuestro clan, intercambiaremos los anillos de juramento y sellaremos nuestra alianza eterna.
+              </p>
+            </div>
+          </div>
+
+          <div class="viking-card conclave-card reveal" style="--delay: 0.2s">
+            <img src="assets/svg/knot-corner.svg" class="card-corner corner-tl" alt="" />
+            <img src="assets/svg/knot-corner.svg" class="card-corner corner-tr" alt="" />
+            <img src="assets/svg/knot-corner.svg" class="card-corner corner-bl" alt="" />
+            <img src="assets/svg/knot-corner.svg" class="card-corner corner-br" alt="" />
+
+            <div>
+              <div class="conclave-icon-box">
+                <img src="assets/svg/drinking-horn.svg" alt="Cuerno" width="40" height="40" />
+              </div>
+              <span class="conclave-badge">Banquete & Fiesta</span>
+              <h3 class="conclave-title" data-bind="banquet.title">El Gran Festín en el Valhalla</h3>
+              <p class="conclave-place" data-bind="banquet.placeName">Asejar Viveros · Jardines Principales</p>
+              <div class="conclave-time">
+                <span class="rune">ᛋ</span>
+                <span data-bind="banquet.time">14:00 Horas</span>
+              </div>
+              <p class="conclave-desc" data-bind="banquet.description">
+                Alzad vuestros cuernos con hidromiel y buen vino. Viandas selectas, música y fiesta para celebrar el inicio de nuestra saga.
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECCIÓN: CRONOGRAMA / TIMELINE -->
+    <section class="section" id="cronograma">
+      <div class="container">
+        <div class="section-header reveal">
+          <div class="section-pretitle">
+            <span class="rune">ᛏ</span>
+            <span>El Sol y las Estrellas</span>
+            <span class="rune">ᛏ</span>
+          </div>
+          <h2 class="section-title">El Orden de la Batalla</h2>
+          <p class="section-subtitle">
+            El itinerario del festejo paso a paso, comenzando a las 12:00h con el juramento sagrado.
+          </p>
+          <div class="viking-divider">
+            <img src="assets/svg/viking-divider.svg" alt="" />
+          </div>
+        </div>
+
+        <div class="timeline-container" id="timeline-list">
+          <!-- Inyectado dinámicamente desde js/config.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN: ATAVÍO DE GALA -->
+    <section class="section" id="atavio">
+      <div class="container">
+        <div class="section-header reveal">
+          <div class="section-pretitle">
+            <span class="rune">ᚹ</span>
+            <span>Presencia & Estilo</span>
+            <span class="rune">ᚹ</span>
+          </div>
+          <h2 class="section-title">Atavío & Dress Code</h2>
+          <div class="viking-divider">
+            <img src="assets/svg/viking-divider.svg" alt="" />
+          </div>
+        </div>
+
+        <div class="atavio-wrapper reveal">
+          <div class="viking-card atavio-placeholder-card">
+            <img src="assets/svg/knot-corner.svg" class="card-corner corner-tl" alt="" />
+            <img src="assets/svg/knot-corner.svg" class="card-corner corner-tr" alt="" />
+            <img src="assets/svg/knot-corner.svg" class="card-corner corner-bl" alt="" />
+            <img src="assets/svg/knot-corner.svg" class="card-corner corner-br" alt="" />
+
+            <div class="atavio-notice-box">
+              <h3 class="atavio-notice-title">Una Celebración con Esencia Vikinga</h3>
+              <p class="atavio-notice-text">
+                Queremos que este día sea especial, auténtico y diferente a lo habitual. La temática de nuestro enlace es de <strong>inspiración vikinga y nórdica</strong>, por lo que más adelante os facilitaremos una guía completa con ejemplos, sugerencias de estilo, peinados y accesorios tanto para hombres como para mujeres y niños.
+              </p>
+
+              <div class="atavio-clarification-box">
+                <p>
+                  <strong>¿Cómo venir vestidos?</strong><br>
+                  No queremos obligar a nadie a disfrazarse ni a ponerse nada con lo que no se sienta cómodo, pero <strong>tampoco buscamos el clásico traje o vestido de una boda convencional</strong>.
+                </p>
+                <p style="margin-top: 0.8rem;">
+                  La clave es apostar por un estilo natural, rústico o bohemio: tejidos como lino o algodón, detalles en cuero y tonos tierra, verdes bosque, marrones, teja o azules oscuros. Si prefieres no llevar prendas nórdicas, elige un look arreglado pero alternativo que encaje con la magia del entorno.
+                </p>
+              </div>
+            </div>
+
+            <div class="atavio-categories-grid">
+              <div class="atavio-cat-card">
+                <span class="atavio-cat-icon">🧔</span>
+                <span class="atavio-cat-name">Hombre</span>
+                <span class="atavio-cat-status">Ideas de Atavío & Peinados · Próximamente</span>
+              </div>
+              <div class="atavio-cat-card">
+                <span class="atavio-cat-icon">👩</span>
+                <span class="atavio-cat-name">Mujer</span>
+                <span class="atavio-cat-status">Ideas de Vestido & Peinados · Próximamente</span>
+              </div>
+              <div class="atavio-cat-card">
+                <span class="atavio-cat-icon">👦👧</span>
+                <span class="atavio-cat-name">Niños</span>
+                <span class="atavio-cat-status">Atavío Infantil · Próximamente</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN: DESCANSO -->
+    <section class="section" id="descanso">
+      <div class="container">
+        <div class="section-header reveal">
+          <div class="section-pretitle">
+            <span class="rune">ᛖ</span>
+            <span>Aposentos</span>
+            <span class="rune">ᛖ</span>
+          </div>
+          <h2 class="section-title">Descanso</h2>
+          <p class="section-subtitle">
+            Opciones de alojamiento recomendadas en Elche cercanas a la finca.
+          </p>
+          <div class="viking-divider">
+            <img src="assets/svg/viking-divider.svg" alt="" />
+          </div>
+        </div>
+
+        <div class="stay-wrapper reveal">
+          <div class="viking-card">
+            <img src="assets/svg/knot-corner.svg" class="card-corner corner-tl" alt="" />
+            <img src="assets/svg/knot-corner.svg" class="card-corner corner-tr" alt="" />
+            <img src="assets/svg/knot-corner.svg" class="card-corner corner-bl" alt="" />
+            <img src="assets/svg/knot-corner.svg" class="card-corner corner-br" alt="" />
+
+            <h3 class="conclave-title" style="margin-bottom: 0.5rem;" data-bind="stay.title">Aposentos en Elche</h3>
+            <p class="conclave-desc" data-bind="stay.description">
+              Recomendaciones de hoteles cercanos para descansar tras la batalla:
+            </p>
+
+            <div class="hotel-list">
+              <div class="hotel-item">
+                <div>
+                  <div class="hotel-name">Hotel Huerto del Cura (Elche)</div>
+                  <div class="hotel-sub">A 10 min de Asejar Viveros</div>
+                </div>
+                <a href="https://maps.google.com/?q=Hotel+Huerto+del+Cura+Elche" target="_blank" rel="noopener noreferrer" class="btn-viking btn-viking-outline" style="min-height: 40px; padding: 0.45rem 1rem; font-size: 0.8rem;">
+                  <span>Ver Hotel</span>
+                </a>
+              </div>
+
+              <div class="hotel-item">
+                <div>
+                  <div class="hotel-name">Hotel Jardín Milenio (Elche)</div>
+                  <div class="hotel-sub">A 10 min de Asejar Viveros</div>
+                </div>
+                <a href="https://maps.google.com/?q=Hotel+Jardin+Milenio+Elche" target="_blank" rel="noopener noreferrer" class="btn-viking btn-viking-outline" style="min-height: 40px; padding: 0.45rem 1rem; font-size: 0.8rem;">
+                  <span>Ver Hotel</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LLAMAMIENTO FINAL -->
+    <section class="cta-section" id="confirmar">
+      <div class="cta-vegvisir-bg">
+        <img src="assets/svg/vegvisir.svg" alt="" width="420" height="420" />
+      </div>
+
+      <div class="container" style="position: relative; z-index: 2;">
+        <p class="section-pretitle">
+          <span class="rune">ᚷ</span>
+          <span>El Llamamiento Sagrado</span>
+          <span class="rune">ᚷ</span>
+        </p>
+
+        <h2 class="cta-title">¿Alzarás tu cuerno con nosotros?</h2>
+        
+        <p class="cta-deadline" data-bind="rsvp.deadlineText">
+          Por favor, confirmad vuestra asistencia antes del 31 de Diciembre de 2026
+        </p>
+
+        <div>
+          <a href="asistencia.html" class="btn-viking btn-viking-primary btn-cta-giant">
+            <span class="btn-icon-svg">
+              <svg viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
+            </span>
+            <span>Confirmar Asistencia</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="viking-footer">
+      <div class="footer-runes">ᚠ ᚢ ᚦ ᚨ ᚱ ᚲ ᚷ ᚹ</div>
+      <div class="footer-names">Naiara & Guillermo</div>
+      <p class="footer-quote">"Dos clanes, un solo destino forjado en la eternidad"</p>
+      <small style="color: #635b50;">22 · 05 · 2027 · Asejar Viveros (Elche)</small>
+      <br>
+      <a href="dashboard.html" class="footer-admin-link">⚙️ Panel de Confirmaciones</a>
+    </footer>
+
+  </div>
+
+  <!-- BOTÓN FLOTANTE VOLVER ARRIBA (BACK TO TOP) -->
+  <button class="back-to-top" id="back-to-top" aria-label="Volver arriba">
+    <svg viewBox="0 0 24 24">
+      <path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/>
+    </svg>
+  </button>
+
+  <!-- TOAST DE CONFIRMACIÓN -->
+  <div class="toast-notice" id="copy-toast">
+    ¡Copiado al portapapeles!
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 140" width="100%" height="100%">
+  <defs>
+    <filter id="valkGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="0" stdDeviation="2.5" flood-color="#d4af37" flood-opacity="0.7"/>
+    </filter>
+  </defs>
+  <g stroke="#d4af37" stroke-width="4.5" fill="none" stroke-linejoin="round" filter="url(#valkGlow)">
+    <!-- Interlocking triangles of the Valknut -->
+    <polygon points="80,15 130,105 30,105" opacity="0.95"/>
+    <polygon points="55,55 145,55 100,135" opacity="0.95"/>
+    <polygon points="105,55 60,135 15,55" opacity="0.95"/>
+  </g>
+</svg>
+

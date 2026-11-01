@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>Confirmar Asistencia · Naiara & Guillermo · 22.05.2027</title>
+  <meta name="description" content="Formulario de confirmación de asistencia para la boda de Naiara & Guillermo en Asejar Viveros, Elche." />
+  
+  <link rel="icon" type="image/svg+xml" href="assets/svg/vegvisir.svg" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/asistencia-style.css" />
+</head>
+<body>
+
+  <!-- Canvas interactivo de brasas nórdicas -->
+  <canvas id="ember-canvas"></canvas>
+
+  <div class="page-wrapper">
+
+    <!-- BARRA DE NAVEGACIÓN -->
+    <header class="viking-navbar scrolled">
+      <div class="nav-container">
+        <a href="index.html" class="nav-brand">
+          <span class="nav-logo-rune">ᚾ·ᚷ</span>
+          <span class="nav-names">Naiara & Guillermo</span>
+        </a>
+        <a href="index.html" class="btn-viking btn-viking-outline" style="min-height: 40px; padding: 0.4rem 1rem; font-size: 0.8rem;">
+          <span>← Volver a la Invitación</span>
+        </a>
+      </div>
+    </header>
+
+    <main class="asistencia-page">
+      <div class="container">
+        
+        <div class="asistencia-hero-header">
+          <div class="section-pretitle">
+            <span class="rune">ᚷ</span>
+            <span>22 · 05 · 2027 · Asejar Viveros</span>
+            <span class="rune">ᚷ</span>
+          </div>
+          <h1 class="section-title">Confirmar Asistencia</h1>
+          <p class="section-subtitle">
+            Por favor, haznos saber si nos acompañarás antes del 31 de Diciembre de 2026.
+          </p>
+          <div class="viking-divider">
+            <img src="assets/svg/viking-divider.svg" alt="" />
+          </div>
+        </div>
+
+        <div class="viking-card asistencia-card-wrapper">
+          <img src="assets/svg/knot-corner.svg" class="card-corner corner-tl" alt="" />
+          <img src="assets/svg/knot-corner.svg" class="card-corner corner-tr" alt="" />
+          <img src="assets/svg/knot-corner.svg" class="card-corner corner-bl" alt="" />
+          <img src="assets/svg/knot-corner.svg" class="card-corner corner-br" alt="" />
+
+          <form id="form-asistencia" class="asistencia-form">
+
+            <!-- 1. NOMBRE Y APELLIDOS -->
+            <div class="form-field-block">
+              <label for="fullName" class="field-label">
+                <span>Nombre y Apellidos</span>
+                <span class="required-dot">*</span>
+              </label>
+              <input 
+                type="text" 
+                id="fullName" 
+                name="fullName" 
+                class="form-input" 
+                placeholder="Escribe tu nombre y apellidos" 
+                required 
+                autocomplete="name"
+              />
+            </div>
+
+            <!-- 2. PODRÁS ASISTIR -->
+            <div class="form-field-block">
+              <label class="field-label">
+                <span>¿Podrás asistir?</span>
+                <span class="required-dot">*</span>
+              </label>
+              <div class="attendance-options-grid">
+                <label class="attendance-opt-card">
+                  <input type="radio" name="attendance" value="yes" checked />
+                  <div class="opt-box">
+                    <span class="opt-icon">✨</span>
+                    <span class="opt-title">Sí, asistiré</span>
+                    <span class="opt-desc">Allí estaré para celebrar</span>
+                  </div>
+                </label>
+
+                <label class="attendance-opt-card">
+                  <input type="radio" name="attendance" value="no" />
+                  <div class="opt-box">
+                    <span class="opt-icon">🤍</span>
+                    <span class="opt-title">No podré asistir</span>
+                    <span class="opt-desc">Brindaré por vosotros</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <!-- BLOQUE EXTRA SI ASISTE -->
+            <div id="attendance-extra-fields" style="display: flex; flex-direction: column; gap: 1.8rem;">
+              
+              <!-- 3. VIENES ACOMPAÑADO (CHECKBOX) -->
+              <div class="form-field-block">
+                <label class="custom-checkbox-wrapper">
+                  <input type="checkbox" id="hasCompanion" name="hasCompanion" />
+                  <span class="checkbox-label-text">¿Vienes acompañado?</span>
+                </label>
+
+                <div id="companions-block" class="companions-container-box">
+                  <p style="font-size: 0.85rem; color: var(--text-muted);">
+                    Añade los datos de tus acompañantes (pareja o niños):
+                  </p>
+
+                  <div id="companions-list" style="display: flex; flex-direction: column; gap: 0.8rem;">
+                    <!-- Se añaden filas dinámicamente -->
+                  </div>
+
+                  <div>
+                    <button type="button" id="btn-add-companion" class="btn-add-companion-action">
+                      <span>+ Añadir Acompañante</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 4. ALERGIA O INTOLERANCIA (?, Y EN TAL CASO ESPECIFICAR CUÁL) -->
+              <div class="form-field-block">
+                <label class="custom-checkbox-wrapper">
+                  <input type="checkbox" id="hasAllergies" name="hasAllergies" />
+                  <span class="checkbox-label-text">¿Tienes alguna alergia o intolerancia alimentaria?</span>
+                </label>
+
+                <div id="allergy-details-box" class="diet-expand-box">
+                  <input 
+                    type="text" 
+                    id="dietaryDetails" 
+                    name="dietaryDetails" 
+                    class="form-input" 
+                    placeholder="Especifica cuál (ej. celiaquía, vegetariano, lactosa, marisco...)"
+                  />
+                </div>
+              </div>
+
+            </div>
+
+            <!-- MENSAJE DE ERROR -->
+            <div id="asistencia-status-msg" style="display: none; padding: 0.8rem; background: rgba(231, 76, 60, 0.2); border: 1px solid #e74c3c; border-radius: 6px; font-size: 0.9rem; text-align: center; color: #ffb4b4;"></div>
+
+            <!-- BOTÓN ENVIAR -->
+            <div style="text-align: center; margin-top: 0.5rem;">
+              <button type="submit" id="btn-submit-asistencia" class="btn-viking btn-viking-primary btn-cta-giant" style="width: 100%;">
+                <span>Confirmar Asistencia</span>
+              </button>
+            </div>
+
+          </form>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- MODAL DE ÉXITO -->
+    <div class="asistencia-modal" id="asistencia-success-modal">
+      <div class="modal-content-box">
+        <img src="assets/svg/vegvisir.svg" class="modal-crest-icon" alt="" />
+        <h3 class="modal-msg-title gold-text">¡Confirmación Registrada!</h3>
+        <p class="modal-msg-body">
+          Tu respuesta ha sido recibida correctamente.
+        </p>
+        <div class="modal-actions-list">
+          <button type="button" class="btn-viking btn-viking-primary modal-close-btn">
+            <span>Aceptar</span>
+          </button>
+          <a href="index.html" class="btn-viking btn-viking-outline">
+            <span>Volver a la Invitación</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="viking-footer">
+      <div class="footer-runes">ᚠ ᚢ ᚦ ᚨ ᚱ ᚲ ᚷ ᚹ</div>
+      <div class="footer-names">Naiara & Guillermo</div>
+      <p class="footer-quote">"Dos clanes, un solo destino forjado en la eternidad"</p>
+    </footer>
+
+  </div>
+
+  <!-- BOTÓN FLOTANTE VOLVER ARRIBA -->
+  <button class="back-to-top" id="back-to-top" aria-label="Volver arriba">
+    <svg viewBox="0 0 24 24">
+      <path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/>
+    </svg>
+  </button>
+
+  <!-- Firebase Scripts (Compat v9) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <!-- Lógica y configuración -->
+  <script src="js/config.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/asistencia.js"></script>
+</body>
+</html>
+
