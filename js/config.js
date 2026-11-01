@@ -1,12 +1,12 @@
 /**
  * ===================================================================
- * CONFIGURACIÓN DE LA BODA - NAIARA & GUILLERMO
+ * CONFIGURACIÓN DE LA BODA - NAÏARA & GUILLERMO
  * ===================================================================
  */
 
 const WEDDING_CONFIG = {
   // Nombres de los contrayentes
-  brideName: "Naiara",
+  brideName: "Naïara",
   groomName: "Guillermo",
   monogram: "N & G",
   runicMonogram: "ᚾ · ᚷ",

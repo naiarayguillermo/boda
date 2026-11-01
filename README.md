@@ -1,6 +1,6 @@
-# ⚔️ Boda de Naiara & Guillermo · 22 de Mayo de 2027
+# Boda de Naïara & Guillermo · 22 de Mayo de 2027
 
-Invitación web de boda con estética nórdica/vikinga moderna, elegante y 100% optimizada para dispositivos móviles (Mobile-First) para **Naiara & Guillermo**.
+Invitación web de boda con estética nórdica/vikinga moderna, elegante y 100% optimizada para dispositivos móviles (Mobile-First) para **Naïara & Guillermo**.
 
 - **Fecha:** Sábado, 22 de Mayo de 2027
 - **Horarios:** Ceremonia a las 12:00h · Banquete y fiesta a las 14:00h
@@ -10,7 +10,7 @@ Invitación web de boda con estética nórdica/vikinga moderna, elegante y 100% 
 
 ---
 
-## 💻 Servidor Local
+## Servidor Local
 
 Para previsualizar y probar la invitación en tu navegador antes de subirla o desplegarla:
 
@@ -21,11 +21,11 @@ npx serve .
 ```
 
 Una vez ejecutado el comando, abre en tu navegador:
-👉 **[http://localhost:8080](http://localhost:8080)**
+**[http://localhost:8080](http://localhost:8080)**
 
 ---
 
-## 📄 Páginas del Proyecto
+## Páginas del Proyecto
 
 1. **`index.html` (Invitación Principal)**:
    - Portada con cuenta atrás adaptativa hacia el 22/05/2027.
@@ -45,14 +45,14 @@ Una vez ejecutado el comando, abre en tu navegador:
    - **Alergias o intolerancias**: Checkbox que despliega campo de especificación.
 
 3. **`dashboard.html` (Panel de Control & Edición en Vivo)**:
-   - **Edición completa de registros**: Botón **✏️ Editar** en cada fila que permite modificar nombre, asistencia, añadir/quitar/cambiar acompañantes y alergias. Los cambios se sincronizan en tiempo real con Firebase Firestore.
+   - **Edición completa de registros**: Botón **Editar** en cada fila que permite modificar nombre, asistencia, añadir/quitar/cambiar acompañantes y alergias. Los cambios se sincronizan en tiempo real con Firebase Firestore.
    - **Descarga en PDF**: Botón para exportar el listado completo y resumido en un archivo **PDF** maquetado y listo para imprimir o enviar al catering/finca.
    - Resumen en tiempo real: Total confirmaciones, total personas que asisten, desglose de adultos, niños, no asistentes y personas con alergias.
    - Filtros rápidos (*Todos*, *Asisten*, *No Asisten*, *Con Alergias*) y barra de búsqueda en vivo.
 
 ---
 
-## 🔥 Conexión con Firebase
+## Conexión con Firebase
 
 Tanto `asistencia.html` como `dashboard.html` están preparados para conectarse directamente a **Cloud Firestore**:
 
@@ -71,6 +71,12 @@ Tanto `asistencia.html` como `dashboard.html` están preparados para conectarse 
    const ENABLE_FIREBASE = true; // Activa Firebase
    const REQUIRE_AUTH = true;    // Activa la pantalla de login para el dashboard
    ```
+
+   El panel muestra un campo de **usuario** (`naiarayguillermo`) y contraseña. Firebase Auth
+   sigue resolviendo internamente ese usuario contra `naiarayguillermo@boda.es`; el acceso se
+   limita además al UID configurado. La contraseña se crea y gestiona en Firebase Console:
+   nunca debe guardarse en el repositorio. Un `.env` tampoco protege secretos en GitHub Pages,
+   porque cualquier variable enviada al navegador queda expuesta.
 3. Reglas de Firestore recomendadas:
    ```text
    rules_version = '2';
@@ -88,12 +94,12 @@ Tanto `asistencia.html` como `dashboard.html` están preparados para conectarse 
 
 ---
 
-## 🚀 Despliegue en GitHub Pages
+## Despliegue en GitHub Pages
 
 1. Sube los cambios al repositorio:
    ```bash
    git add .
-   git commit -m "Web de boda Naiara & Guillermo: Asistencia simplificada y Dashboard"
+   git commit -m "Web de boda Naïara & Guillermo: Asistencia simplificada y Dashboard"
    git push -u origin main
    ```
 2. En GitHub:

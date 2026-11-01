@@ -21,8 +21,10 @@ const ENABLE_FIREBASE = true;
 // Requerir Firebase Auth para entrar en dashboard.html
 const REQUIRE_AUTH = true;
 
-// Email del único usuario autorizado a ver el dashboard
-const ALLOWED_USER_EMAIL = "naiarayguillermo@boda.es";
+// Firebase Auth sigue usando email internamente, pero la interfaz solo pide usuario.
+const ADMIN_USERNAME = "naiarayguillermo";
+const ADMIN_AUTH_EMAIL = `${ADMIN_USERNAME}@boda.es`;
+const ALLOWED_USER_UID = "O8pC4aNgKFQ6P9pm4uiSdSDec3U2";
 
 // Nombre de la colección en Firestore donde se guardan los invitados
 const FIRESTORE_COLLECTION = "confirmaciones_boda";
@@ -31,6 +33,8 @@ if (typeof window !== "undefined") {
   window.FIREBASE_CONFIG = FIREBASE_CONFIG;
   window.ENABLE_FIREBASE = ENABLE_FIREBASE;
   window.REQUIRE_AUTH = REQUIRE_AUTH;
-  window.ALLOWED_USER_EMAIL = ALLOWED_USER_EMAIL;
+  window.ADMIN_USERNAME = ADMIN_USERNAME;
+  window.ADMIN_AUTH_EMAIL = ADMIN_AUTH_EMAIL;
+  window.ALLOWED_USER_UID = ALLOWED_USER_UID;
   window.FIRESTORE_COLLECTION = FIRESTORE_COLLECTION;
 }

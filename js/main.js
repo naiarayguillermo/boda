@@ -81,7 +81,7 @@ function initCountdown() {
     if (distance < 0) {
       const banner = document.getElementById("countdown-box");
       if (banner) {
-        banner.innerHTML = `<div class="countdown-ended" style="font-size: 1.1rem; color: var(--gold-light);">¡El gran día ha llegado! Que los dioses bendigan a Naiara & Guillermo</div>`;
+        banner.innerHTML = `<div class="countdown-ended" style="font-size: 1.1rem; color: var(--gold-light);">¡El gran día ha llegado! Que los dioses bendigan a Naïara & Guillermo</div>`;
       }
       return;
     }

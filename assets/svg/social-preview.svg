@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#10141d"/>
+  <rect x="28" y="28" width="1144" height="574" rx="18" fill="none" stroke="#d4af37" stroke-width="3"/>
+  <circle cx="600" cy="170" r="92" fill="none" stroke="#d4af37" stroke-width="3"/>
+  <path d="M600 95v150M525 170h150M548 118l104 104M652 118 548 222" stroke="#f2d675" stroke-width="3" opacity=".8"/>
+  <text x="600" y="370" text-anchor="middle" fill="#f2d675" font-family="Georgia,serif" font-size="64">Naïara &amp; Guillermo</text>
+  <text x="600" y="435" text-anchor="middle" fill="#e7e1d7" font-family="Arial,sans-serif" font-size="30" letter-spacing="5">22 · 05 · 2027</text>
+  <text x="600" y="490" text-anchor="middle" fill="#b9b0a2" font-family="Arial,sans-serif" font-size="24">Asejar Viveros · Elche</text>
+</svg>

@@ -14,6 +14,41 @@ document.addEventListener("DOMContentLoaded", () => {
 let dbInstance = null;
 let pendingConfirmationData = null;
 
+function normalizeGuestName(name) {
+  return String(name || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .replace(/\s+/g, " ")
+    .toLowerCase();
+}
+
+async function hasDuplicateGuestName(data) {
+  const submittedNames = [data.fullName, ...(data.companions || []).map(companion => companion.name)]
+    .map(normalizeGuestName)
+    .filter(Boolean);
+
+  if (new Set(submittedNames).size !== submittedNames.length) {
+    return true;
+  }
+
+  let existingRecords = [];
+  if (dbInstance && typeof ENABLE_FIREBASE !== "undefined" && ENABLE_FIREBASE) {
+    const collectionName = typeof FIRESTORE_COLLECTION !== "undefined" ? FIRESTORE_COLLECTION : "confirmaciones_boda";
+    const snapshot = await dbInstance.collection(collectionName).get();
+    snapshot.forEach(doc => existingRecords.push(doc.data()));
+  } else {
+    existingRecords = JSON.parse(localStorage.getItem("confirmaciones_boda") || "[]");
+  }
+
+  const existingNames = new Set();
+  existingRecords.forEach(record => {
+    if (record.fullName) existingNames.add(normalizeGuestName(record.fullName));
+    (record.companions || []).forEach(companion => existingNames.add(normalizeGuestName(companion.name)));
+  });
+  return submittedNames.some(name => existingNames.has(name));
+}
+
 async function setupFirebaseIfAvailable() {
   if (typeof ENABLE_FIREBASE !== "undefined" && ENABLE_FIREBASE && typeof firebase !== "undefined") {
     try {
@@ -21,7 +56,7 @@ async function setupFirebaseIfAvailable() {
         firebase.initializeApp(FIREBASE_CONFIG);
       }
       dbInstance = firebase.firestore();
-      console.log("🔥 Firebase Firestore inicializado.");
+      console.log("Firebase Firestore inicializado.");
     } catch (err) {
       console.error("Error al inicializar Firebase:", err);
     }
@@ -71,10 +106,10 @@ function initCompanionsSystem() {
           <input type="hidden" class="companion-type-val" value="pareja" />
           <div class="companion-type-segmented">
             <button type="button" class="type-pill-btn active" data-type="pareja">
-              <span>👤 Pareja / Adulto</span>
+              <span class="inline-svg-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm8 0a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM2 21v-2a5 5 0 0 1 5-5h2a5 5 0 0 1 5 5v2m-1 0v-2a5 5 0 0 1 5-5h1a5 5 0 0 1 5 5v2"/></svg></span><span>Pareja / Adulto</span>
             </button>
             <button type="button" class="type-pill-btn" data-type="niño">
-              <span>🧒 Niño / Niña</span>
+              <span class="inline-svg-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 22a8 8 0 0 1 16 0M9 4 7 2m8 2 2-2"/></svg></span><span>Niño / Niña</span>
             </button>
           </div>
         </div>
@@ -242,7 +277,7 @@ function initAsistenciaForm() {
         <div style="margin-top: 0.3rem;">
           ${data.companions.map(c => `
             <span class="review-companion-badge">
-              ${c.type === 'niño' ? '🧒 Niño/a:' : '👤 Pareja/Adulto:'} <strong>${c.name}</strong>
+              <span class="inline-svg-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 22a7 7 0 0 1 14 0"/></svg></span> ${c.type === 'niño' ? 'Niño/a:' : 'Pareja/Adulto:'} <strong>${c.name}</strong>
             </span>
           `).join("")}
         </div>
@@ -254,7 +289,7 @@ function initAsistenciaForm() {
 
     let allergySummary = `<span style="color: var(--text-muted);">Ninguna</span>`;
     if (data.hasAllergies && data.allergiesDetails) {
-      allergySummary = `<strong style="color: #f39c12;">⚠️ ${data.allergiesDetails}</strong>`;
+      allergySummary = `<strong style="color: #f39c12;"><span class="inline-svg-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m12 3 10 18H2L12 3zm0 6v5m0 3h.01"/></svg></span> ${data.allergiesDetails}</strong>`;
     }
 
     reviewContent.innerHTML = `
@@ -286,6 +321,9 @@ function initAsistenciaForm() {
     }
 
     try {
+      if (await hasDuplicateGuestName(confirmationData)) {
+        throw new Error("DUPLICATE_GUEST_NAME");
+      }
       if (dbInstance && typeof ENABLE_FIREBASE !== "undefined" && ENABLE_FIREBASE) {
         const collectionName = typeof FIRESTORE_COLLECTION !== "undefined" ? FIRESTORE_COLLECTION : "confirmaciones_boda";
         await dbInstance.collection(collectionName).add(confirmationData);
@@ -316,7 +354,9 @@ function initAsistenciaForm() {
     } catch (err) {
       console.error("Error al registrar asistencia:", err);
       if (statusMsg) {
-        statusMsg.textContent = "Hubo un error al guardar tu respuesta. Por favor, avisa directamente a Naiara o Guillermo.";
+        statusMsg.textContent = err.message === "DUPLICATE_GUEST_NAME"
+          ? "Ese nombre ya está registrado (como titular o acompañante). Revisa los datos o contacta con Naïara o Guillermo."
+          : "Hubo un error al guardar tu respuesta. Por favor, avisa directamente a Naïara o Guillermo.";
         statusMsg.style.display = "block";
       }
     } finally {

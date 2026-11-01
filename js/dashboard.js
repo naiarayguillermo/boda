@@ -32,14 +32,14 @@ function initAuth() {
 
       // Escuchar cambios de sesión (se llama automáticamente al cargar)
       authInstance.onAuthStateChanged((user) => {
-        const allowedEmail = typeof ALLOWED_USER_EMAIL !== "undefined"
-          ? ALLOWED_USER_EMAIL
-          : "naiarayguillermo@boda.es";
+        const allowedUid = typeof ALLOWED_USER_UID !== "undefined"
+          ? ALLOWED_USER_UID
+          : "O8pC4aNgKFQ6P9pm4uiSdSDec3U2";
 
-        if (user && user.email === allowedEmail) {
+        if (user && user.uid === allowedUid) {
           // Usuario autorizado → mostrar dashboard
           hiddenGate();
-          showLogoutButton(user.email);
+          showLogoutButton(ADMIN_USERNAME || "usuario");
           initFirebaseDashboard();
           initToolbar();
           initEditModal();
@@ -77,12 +77,12 @@ function hiddenGate() {
   if (gate) gate.classList.remove("active");
 }
 
-function showLogoutButton(email) {
+function showLogoutButton(username) {
   const logoutContainer = document.getElementById("logout-container");
   if (logoutContainer) {
     logoutContainer.innerHTML = `
       <span style="font-size: 0.8rem; color: var(--text-muted); margin-right: 0.5rem;">
-        🔓 ${email}
+        <span class="btn-icon-svg" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 4 7v5c0 4.7 3.4 8.7 8 10 4.6-1.3 8-5.3 8-10V7l-8-4z"/></svg></span>${username}
       </span>
       <button type="button" id="btn-logout" class="btn-viking btn-viking-outline"
         style="min-height: 36px; padding: 0.3rem 0.8rem; font-size: 0.78rem; color: #ff6b6b; border-color: rgba(231,76,60,0.4);">
@@ -108,10 +108,10 @@ function initLoginForm() {
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const email = document.getElementById("adminEmail")?.value.trim();
+    const username = document.getElementById("adminUsername")?.value.trim();
     const password = document.getElementById("adminPassword")?.value;
 
-    if (!email || !password) return;
+    if (!username || !password) return;
 
     if (errEl) errEl.style.display = "none";
     if (spinner) spinner.style.display = "block";
@@ -120,14 +120,20 @@ function initLoginForm() {
     if (submitBtn) submitBtn.disabled = true;
 
     try {
-      await authInstance.signInWithEmailAndPassword(email, password);
+      const configuredUsername = typeof ADMIN_USERNAME !== "undefined" ? ADMIN_USERNAME : "naiarayguillermo";
+      const authEmail = typeof ADMIN_AUTH_EMAIL !== "undefined"
+        ? ADMIN_AUTH_EMAIL
+        : `${configuredUsername}@boda.es`;
+      if (username.toLowerCase() !== configuredUsername.toLowerCase()) {
+        throw { code: "auth/user-not-found" };
+      }
+      await authInstance.signInWithEmailAndPassword(authEmail, password);
       // onAuthStateChanged se encargará de mostrar/ocultar el gate
     } catch (err) {
       console.warn("Error de login:", err.code);
       let msg = "Credenciales incorrectas. Inténtalo de nuevo.";
       if (err.code === "auth/user-not-found") msg = "Usuario no encontrado.";
       if (err.code === "auth/wrong-password") msg = "Contraseña incorrecta.";
-      if (err.code === "auth/invalid-email") msg = "Email no válido.";
       if (err.code === "auth/too-many-requests") msg = "Demasiados intentos. Espera unos minutos.";
 
       if (errEl) {
@@ -253,7 +259,7 @@ function renderTable() {
     tbody.innerHTML = `
       <tr>
         <td colspan="9" class="empty-table-state">
-          <div class="empty-icon">📜</div>
+          <div class="empty-icon inline-svg-icon"><svg viewBox="0 0 24 24"><path d="M6 3h12v18H6zM9 7h6M9 11h6M9 15h4"/></svg></div>
           <p>No hay confirmaciones que coincidan con este filtro.</p>
         </td>
       </tr>
@@ -271,7 +277,7 @@ function renderTable() {
     if (isYes && item.companions && item.companions.length > 0) {
       companionsHtml = `<div class="companions-cell">${item.companions.map(c => `
         <span class="badge-companion" title="${c.type === 'niño' ? 'Niño / Niña' : 'Pareja / Adulto'}">
-          ${c.type === 'niño' ? '🧒' : '👤'} ${c.name}
+          <span class="inline-svg-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M5 22a7 7 0 0 1 14 0"/></svg></span> ${c.name}
           <em style="font-size:0.72rem; opacity:0.7;">${c.type === 'niño' ? 'niño/a' : 'adulto'}</em>
         </span>
       `).join("")}</div>`;
@@ -281,7 +287,7 @@ function renderTable() {
 
     let allergyHtml = `<span style="color: var(--text-muted); font-size: 0.82rem;">Ninguna</span>`;
     if (item.hasAllergies && item.allergiesDetails && item.allergiesDetails !== "Ninguna") {
-      allergyHtml = `<span class="badge-allergy">⚠️ ${item.allergiesDetails}</span>`;
+      allergyHtml = `<span class="badge-allergy"><span class="inline-svg-icon"><svg viewBox="0 0 24 24"><path d="m12 3 10 18H2L12 3zm0 6v5m0 3h.01"/></svg></span> ${item.allergiesDetails}</span>`;
     }
 
     let dedicationHtml = `<span style="color: var(--text-muted); font-size: 0.82rem;">-</span>`;
@@ -307,7 +313,7 @@ function renderTable() {
         <td class="col-date"><small style="color: var(--text-muted);">${dateStr}</small></td>
         <td class="col-actions">
           <button type="button" class="btn-action-edit" data-id="${item.id}">
-            <span>✏️ Editar</span>
+            <span class="inline-svg-icon"><svg viewBox="0 0 24 24"><path d="m4 16-1 5 5-1L20 8l-4-4L4 16zm10-9 4 4"/></svg></span><span>Editar</span>
           </button>
         </td>
       </tr>
@@ -377,7 +383,7 @@ function exportToPDF() {
 
   doc.setFontSize(18);
   doc.setTextColor(212, 175, 55);
-  doc.text("Boda Naiara & Guillermo · Listado de Asistencia", 14, 16);
+  doc.text("Boda Naïara & Guillermo · Listado de Asistencia", 14, 16);
 
   doc.setFontSize(10);
   doc.setTextColor(120, 120, 120);
@@ -591,8 +597,8 @@ function addEditCompanionRow(name = "", type = "pareja") {
   row.innerHTML = `
     <input type="text" class="form-input edit-comp-name" placeholder="Nombre acompañante" value="${name}" style="min-height: 38px; padding: 0.4rem 0.8rem; font-size: 0.88rem;" />
     <select class="form-select edit-comp-type" style="min-height: 38px; padding: 0.4rem 0.8rem; font-size: 0.85rem;">
-      <option value="pareja" ${type === 'pareja' ? 'selected' : ''}>👤 Pareja / Adulto</option>
-      <option value="niño" ${type === 'niño' ? 'selected' : ''}>🧒 Niño / Niña</option>
+      <option value="pareja" ${type === 'pareja' ? 'selected' : ''}>Pareja / Adulto</option>
+      <option value="niño" ${type === 'niño' ? 'selected' : ''}>Niño / Niña</option>
     </select>
     <button type="button" class="btn-remove-edit-comp" title="Eliminar acompañante">&times;</button>
   `;

@@ -569,6 +569,15 @@ h1, h2, h3, h4, .epic-font {
   fill: currentColor;
 }
 
+.inline-svg-icon { display: inline-flex; align-items: center; justify-content: center; color: currentColor; }
+.inline-svg-icon svg, .requirement-mark svg { width: 1.15em; height: 1.15em; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.requirements-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+.requirement-card { padding: 1.6rem; }
+.requirement-mark { color: var(--gold-light); display: inline-flex; margin-bottom: .7rem; }
+.requirement-card h3 { color: var(--gold-light); margin-bottom: .55rem; }
+.requirement-card p { color: var(--text-muted); line-height: 1.65; margin: 0; }
+@media (max-width: 780px) { .requirements-grid { grid-template-columns: 1fr; } }
+
 /* ===================================================================
    TARJETAS
    =================================================================== */

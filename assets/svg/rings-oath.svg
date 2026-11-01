@@ -6,7 +6,7 @@
   </defs>
   <!-- Two intertwined Norse oath rings / torcs -->
   <g stroke="#d4af37" stroke-width="4.5" fill="none" stroke-linecap="round" filter="url(#ringGlow)">
-    <!-- First ring (Naiara) -->
+    <!-- First ring (Naïara) -->
     <ellipse cx="40" cy="50" rx="26" ry="26" transform="rotate(-15 40 50)"/>
     <!-- Second ring (Guillermo) -->
     <ellipse cx="60" cy="50" rx="26" ry="26" transform="rotate(15 60 50)"/>
@@ -17,4 +17,3 @@
   <!-- Central binding spark -->
   <polygon points="50,42 53,50 50,58 47,50" fill="#f5e197"/>
 </svg>
-
