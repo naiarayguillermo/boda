@@ -1272,6 +1272,7 @@ h1, h2, h3, h4, .epic-font {
     top: 60px;
     left: 0;
     width: 100%;
+    margin: 0;
     background: #0c1017; /* Fondo opaco nítido para evitar cualquier desenfoque de texto */
     flex-direction: column;
     padding: 2.2rem 1.5rem;
