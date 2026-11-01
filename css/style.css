@@ -239,6 +239,7 @@ h1, h2, h3, h4, .epic-font {
   list-style: none;
   gap: 1.5rem;
   align-items: center;
+  margin-left: 1.5rem;
 }
 
 .nav-links a {
@@ -1034,6 +1035,7 @@ h1, h2, h3, h4, .epic-font {
   border: 1px solid transparent;
   transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
   flex-shrink: 0;
+  margin-left: auto;
 }
 
 .nav-dashboard-icon:hover {
@@ -1258,6 +1260,10 @@ h1, h2, h3, h4, .epic-font {
   .menu-toggle {
     display: flex;
     margin-left: auto; /* A la derecha del todo */
+  }
+
+  .nav-dashboard-icon {
+    margin-left: 0.6rem;
   }
 
   /* Menú desplegable móvil: nitidez total, z-index 2002 superior a cualquier blur */
