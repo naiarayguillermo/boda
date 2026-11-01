@@ -113,7 +113,7 @@ const WEDDING_CONFIG = {
   rsvp: {
     deadlineText: "Por favor, confirmad vuestra asistencia antes del 31 de Diciembre de 2026",
     buttonText: "Confirmar Asistencia",
-    url: "asistencia.html"
+    url: "asistencia/"
   }
 };
 

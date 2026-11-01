@@ -6,7 +6,34 @@ Invitación web de boda con estética nórdica/vikinga moderna, elegante y 100% 
 - **Horarios:** Ceremonia a las 12:00h · Banquete y fiesta a las 14:00h
 - **Lugar:** [Asejar Viveros · La Hoya, Elche (Alicante)](https://maps.app.goo.gl/aNG3K9HyFQzcdcWY9)
 - **Confirmación:** Por favor, confirmar antes del 31 de Diciembre de 2026
-- **Tecnologías:** HTML5, CSS3 y JavaScript nativo (Vanilla), sin dependencias ni compiladores.
+- **Tecnologías:** HTML5, CSS3 y JavaScript nativo (Vanilla), con un pequeño script Python de construcción para GitHub Pages.
+
+## Estructura del proyecto
+
+El código fuente vive en `src/` y la web publicada se genera en `dist/`:
+
+```text
+src/
+├── pages/
+│   ├── home.html
+│   ├── asistencia.html
+│   └── dashboard.html
+├── css/
+├── js/
+└── assets/
+scripts/
+└── build.py
+```
+
+El build convierte las páginas en estas URLs:
+
+```text
+/                 → dist/index.html
+/asistencia/      → dist/asistencia/index.html
+/dashboard/       → dist/dashboard/index.html
+```
+
+`dist/` está ignorada por Git porque se genera automáticamente durante el despliegue.
 
 ---
 
@@ -15,9 +42,8 @@ Invitación web de boda con estética nórdica/vikinga moderna, elegante y 100% 
 Para previsualizar y probar la invitación en tu navegador antes de subirla o desplegarla:
 
 ```bash
-python3 -m http.server 8080
-# o también:
-npx serve .
+python3 scripts/build.py
+python3 -m http.server 8080 --directory dist
 ```
 
 Una vez ejecutado el comando, abre en tu navegador:
@@ -27,16 +53,16 @@ Una vez ejecutado el comando, abre en tu navegador:
 
 ## Páginas del Proyecto
 
-1. **`index.html` (Invitación Principal)**:
+1. **`src/pages/home.html` (Invitación Principal)**:
    - Portada con cuenta atrás adaptativa hacia el 22/05/2027.
    - Historia de los clanes.
    - **Ubicación en Asejar Viveros**: mapa embebido, coordenadas GPS (`38°14'35.1"N 0°46'18.8"W`), botones directos con iconos SVG para Google Maps, Apple Maps y botón para copiar la dirección.
    - Cronograma de la jornada.
    - **Atavío de Gala**: Estructura preparada para integrar fotos y sugerencias de vestimenta y peinados (Hombre, Mujer, Niño).
    - **Descanso**: Hoteles recomendados en Elche cercanos a la finca.
-   - Botón final hacia `asistencia.html`.
+   - Botón final hacia `/asistencia/`.
 
-2. **`asistencia.html` (Formulario de Confirmación)**:
+2. **`src/pages/asistencia.html` (Formulario de Confirmación)**:
    - **Nombre y apellidos**.
    - **¿Podrás asistir?** (Sí / No).
    - **Doble confirmación con resumen**: Para los que marcan que SÍ van, antes de enviar se abre una ventana modal con el desglose exacto (titular, acompañantes y alergias) para verificar que todo esté bien antes de confirmar definitivamente.
@@ -44,7 +70,7 @@ Una vez ejecutado el comando, abre en tu navegador:
    - **Acompañantes**: Selector segmentado moderno para indicar si es *Pareja / Adulto* o *Niño / Niña*.
    - **Alergias o intolerancias**: Checkbox que despliega campo de especificación.
 
-3. **`dashboard/index.html` (Panel de Control & Edición en Vivo)**:
+3. **`src/pages/dashboard.html` (Panel de Control & Edición en Vivo)**:
    - **Edición completa de registros**: Botón **Editar** en cada fila que permite modificar nombre, asistencia, añadir/quitar/cambiar acompañantes y alergias. Los cambios se sincronizan en tiempo real con Firebase Firestore.
    - **Descarga en PDF**: Botón para exportar el listado completo y resumido en un archivo **PDF** maquetado y listo para imprimir o enviar al catering/finca.
    - Resumen en tiempo real: Total confirmaciones, total personas que asisten, desglose de adultos, niños, no asistentes y personas con alergias.
@@ -54,9 +80,9 @@ Una vez ejecutado el comando, abre en tu navegador:
 
 ## Conexión con Firebase
 
-Tanto `asistencia.html` como `dashboard/index.html` están preparados para conectarse directamente a **Cloud Firestore**:
+Tanto `src/pages/asistencia.html` como `src/pages/dashboard.html` están preparados para conectarse directamente a **Cloud Firestore**:
 
-1. Abre **[`js/firebase-config.js`](js/firebase-config.js)**.
+1. Abre **[`src/js/firebase-config.js`](src/js/firebase-config.js)**.
 2. Añade tus credenciales de Firebase:
    ```javascript
    const FIREBASE_CONFIG = {
@@ -104,9 +130,9 @@ Tanto `asistencia.html` como `dashboard/index.html` están preparados para conec
    ```
 2. En GitHub:
    - Ve a **Settings** > **Pages**.
-   - En **Source**, selecciona **Deploy from a branch**.
-   - Selecciona la rama `main` y `/ (root)`.
+   - En **Source**, selecciona **GitHub Actions**.
+   - El workflow `.github/workflows/deploy-pages.yml` construirá `dist/` y publicará la web.
 3. Tu web estará disponible en:
    - Web principal: `https://naiarayguillermo.github.io/boda/`
-   - Formulario: `https://naiarayguillermo.github.io/boda/asistencia.html`
+   - Formulario: `https://naiarayguillermo.github.io/boda/asistencia/`
    - Dashboard: `https://naiarayguillermo.github.io/boda/dashboard/`
