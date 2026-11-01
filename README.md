@@ -44,7 +44,7 @@ Una vez ejecutado el comando, abre en tu navegador:
    - **Acompañantes**: Selector segmentado moderno para indicar si es *Pareja / Adulto* o *Niño / Niña*.
    - **Alergias o intolerancias**: Checkbox que despliega campo de especificación.
 
-3. **`dashboard.html` (Panel de Control & Edición en Vivo)**:
+3. **`dashboard/index.html` (Panel de Control & Edición en Vivo)**:
    - **Edición completa de registros**: Botón **Editar** en cada fila que permite modificar nombre, asistencia, añadir/quitar/cambiar acompañantes y alergias. Los cambios se sincronizan en tiempo real con Firebase Firestore.
    - **Descarga en PDF**: Botón para exportar el listado completo y resumido en un archivo **PDF** maquetado y listo para imprimir o enviar al catering/finca.
    - Resumen en tiempo real: Total confirmaciones, total personas que asisten, desglose de adultos, niños, no asistentes y personas con alergias.
@@ -54,7 +54,7 @@ Una vez ejecutado el comando, abre en tu navegador:
 
 ## Conexión con Firebase
 
-Tanto `asistencia.html` como `dashboard.html` están preparados para conectarse directamente a **Cloud Firestore**:
+Tanto `asistencia.html` como `dashboard/index.html` están preparados para conectarse directamente a **Cloud Firestore**:
 
 1. Abre **[`js/firebase-config.js`](js/firebase-config.js)**.
 2. Añade tus credenciales de Firebase:
@@ -109,4 +109,4 @@ Tanto `asistencia.html` como `dashboard.html` están preparados para conectarse 
 3. Tu web estará disponible en:
    - Web principal: `https://naiarayguillermo.github.io/boda/`
    - Formulario: `https://naiarayguillermo.github.io/boda/asistencia.html`
-   - Dashboard: `https://naiarayguillermo.github.io/boda/dashboard.html`
+   - Dashboard: `https://naiarayguillermo.github.io/boda/dashboard/`

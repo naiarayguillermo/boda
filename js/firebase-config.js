@@ -18,7 +18,7 @@ const FIREBASE_CONFIG = {
 // Sincronización activada con Firebase
 const ENABLE_FIREBASE = true;
 
-// Requerir Firebase Auth para entrar en dashboard.html
+// Requerir Firebase Auth para entrar en /dashboard/
 const REQUIRE_AUTH = true;
 
 // Firebase Auth sigue usando email internamente, pero la interfaz solo pide usuario.
