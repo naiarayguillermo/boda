@@ -9,6 +9,11 @@
   <link rel="icon" type="image/svg+xml" href="assets/svg/vegvisir.svg" />
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/dashboard-style.css" />
+  <script>
+    if (localStorage.getItem("boda_dashboard_session") === "1") {
+      document.documentElement.classList.add("session-known");
+    }
+  </script>
 </head>
 <body>
 
@@ -24,14 +29,13 @@
           <span class="nav-logo-rune">ᚾ·ᚷ</span>
           <span class="nav-names">Naïara &amp; Guillermo</span>
         </a>
-        <div style="display: flex; gap: 0.8rem; align-items: center; flex-wrap: wrap;">
-          <!-- Contenedor de logout (se rellena dinámicamente al autenticarse) -->
-          <div id="logout-container" style="display: none;"></div>
-          <a href="asistencia.html" class="btn-viking btn-viking-outline" style="min-height: 38px; padding: 0.35rem 0.9rem; font-size: 0.78rem;">
-            <span>Formulario</span>
-          </a>
-          <a href="index.html" class="btn-viking btn-viking-outline" style="min-height: 38px; padding: 0.35rem 0.9rem; font-size: 0.78rem;">
-            <span>← Invitación</span>
+        <div class="dashboard-nav-actions">
+          <button type="button" id="btn-logout" class="btn-viking btn-viking-outline dashboard-nav-link dashboard-logout" hidden>
+            <span class="logout-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M10 5H5v14h5M14 8l4 4-4 4m4-4H9"/></svg></span>
+            <span>Cerrar sesión</span>
+          </button>
+          <a href="index.html" class="btn-viking btn-viking-outline dashboard-nav-link">
+            <span>Volver a la invitación</span>
           </a>
         </div>
       </div>

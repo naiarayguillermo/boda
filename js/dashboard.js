@@ -29,6 +29,9 @@ function initAuth() {
       }
       authInstance = firebase.auth();
       dbInstance = firebase.firestore();
+      authInstance.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch((error) => {
+        console.warn("No se pudo conservar la sesión de Firebase:", error);
+      });
 
       // Escuchar cambios de sesión (se llama automáticamente al cargar)
       authInstance.onAuthStateChanged((user) => {
@@ -38,12 +41,17 @@ function initAuth() {
 
         if (user && user.uid === allowedUid) {
           // Usuario autorizado → mostrar dashboard
+          localStorage.setItem("boda_dashboard_session", "1");
+          document.documentElement.classList.add("session-known");
+          showLogoutButton();
           hiddenGate();
-          showLogoutButton(ADMIN_USERNAME || "usuario");
           initFirebaseDashboard();
           initToolbar();
           initEditModal();
         } else {
+          hideLogoutButton();
+          localStorage.removeItem("boda_dashboard_session");
+          document.documentElement.classList.remove("session-known");
           if (user) {
             // Usuario logueado pero NO autorizado → cerrar sesión inmediatamente
             authInstance.signOut();
@@ -67,6 +75,22 @@ function initAuth() {
   initEditModal();
 }
 
+function showLogoutButton() {
+  const logoutButton = document.getElementById("btn-logout");
+  if (!logoutButton) return;
+  logoutButton.hidden = false;
+  logoutButton.onclick = () => {
+    if (authInstance) {
+      authInstance.signOut();
+    }
+  };
+}
+
+function hideLogoutButton() {
+  const logoutButton = document.getElementById("btn-logout");
+  if (logoutButton) logoutButton.hidden = true;
+}
+
 function showGate() {
   const gate = document.getElementById("login-gate");
   if (gate) gate.classList.add("active");
@@ -75,29 +99,6 @@ function showGate() {
 function hiddenGate() {
   const gate = document.getElementById("login-gate");
   if (gate) gate.classList.remove("active");
-}
-
-function showLogoutButton(username) {
-  const logoutContainer = document.getElementById("logout-container");
-  if (logoutContainer) {
-    logoutContainer.innerHTML = `
-      <span style="font-size: 0.8rem; color: var(--text-muted); margin-right: 0.5rem;">
-        <span class="btn-icon-svg" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 4 7v5c0 4.7 3.4 8.7 8 10 4.6-1.3 8-5.3 8-10V7l-8-4z"/></svg></span>${username}
-      </span>
-      <button type="button" id="btn-logout" class="btn-viking btn-viking-outline"
-        style="min-height: 36px; padding: 0.3rem 0.8rem; font-size: 0.78rem; color: #ff6b6b; border-color: rgba(231,76,60,0.4);">
-        <span>Cerrar sesión</span>
-      </button>
-    `;
-    document.getElementById("btn-logout")?.addEventListener("click", () => {
-      if (authInstance) {
-        authInstance.signOut();
-      }
-    });
-    logoutContainer.style.display = "flex";
-    logoutContainer.style.alignItems = "center";
-    logoutContainer.style.gap = "0.5rem";
-  }
 }
 
 function initLoginForm() {

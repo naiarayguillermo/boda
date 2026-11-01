@@ -8,6 +8,48 @@
   min-height: 100vh;
 }
 
+.dashboard-nav-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.dashboard-nav-link {
+  min-height: 38px;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.dashboard-logout {
+  color: #e88982;
+  border-color: rgba(231, 76, 60, 0.45);
+}
+
+.dashboard-logout:hover {
+  color: #fff;
+  border-color: #e88982;
+  background: rgba(231, 76, 60, 0.16);
+}
+
+.logout-icon {
+  display: inline-flex;
+  width: 16px;
+  height: 16px;
+}
+
+.logout-icon svg {
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 .dash-header {
   display: flex;
   justify-content: space-between;
@@ -27,6 +69,7 @@
   gap: 0.8rem;
   align-items: center;
   flex-wrap: wrap;
+  width: 100%;
 }
 
 /* Métricas / Stats Cards */
@@ -142,12 +185,40 @@
 
 /* Tabla de Asistencia */
 .table-container {
+  position: relative;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 8px;
   overflow-x: auto;
+  overflow-y: hidden;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   -webkit-overflow-scrolling: touch;
+  scrollbar-color: var(--gold-primary) rgba(10, 13, 19, 0.9);
+  scrollbar-width: auto;
+}
+
+.table-container::-webkit-scrollbar {
+  height: 13px;
+}
+
+.table-container::-webkit-scrollbar-track {
+  background: linear-gradient(180deg, #0b0f16, #171b24);
+  border-top: 1px solid rgba(212, 175, 55, 0.22);
+}
+
+.table-container::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #a27b17, var(--gold-light), #a27b17);
+  border: 3px solid #0b0f16;
+  border-radius: 999px;
+  min-width: 90px;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(90deg, #c49a28, #ffe58a, #c49a28);
+}
+
+.table-container::-webkit-scrollbar-corner {
+  background: #0b0f16;
 }
 
 .dash-table {
@@ -391,6 +462,46 @@
 }
 
 @media (max-width: 600px) {
+  .dashboard-page {
+    padding-top: 8.5rem;
+  }
+
+  .viking-navbar.scrolled {
+    padding: 0.65rem 0.85rem;
+  }
+
+  .viking-navbar .nav-container {
+    align-items: center;
+    flex-wrap: wrap;
+    row-gap: 0.65rem;
+  }
+
+  .viking-navbar .nav-brand {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .viking-navbar .nav-names {
+    font-size: 0.76rem;
+    letter-spacing: 0.035em;
+    white-space: nowrap;
+  }
+
+  .dashboard-nav-actions {
+    flex: 1 0 100%;
+    width: 100%;
+    gap: 0.55rem;
+  }
+
+  .dashboard-nav-link {
+    flex: 1 1 0;
+    min-width: 0;
+    width: auto;
+    min-height: 36px;
+    padding: 0.35rem 0.5rem;
+    font-size: 0.72rem;
+  }
+
   .edit-companion-item {
     grid-template-columns: 1fr;
   }
@@ -411,6 +522,11 @@
   justify-content: center;
   padding: 1.5rem;
   z-index: 10000;
+}
+
+html.session-known .login-gate-overlay,
+html.session-known .login-gate-overlay.active {
+  display: none;
 }
 
 .login-gate-overlay.active {

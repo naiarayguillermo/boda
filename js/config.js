@@ -8,7 +8,7 @@ const WEDDING_CONFIG = {
   // Nombres de los contrayentes
   brideName: "Naïara",
   groomName: "Guillermo",
-  monogram: "N & G",
+  monogram: "Naïara & Guillermo",
   runicMonogram: "ᚾ · ᚷ",
 
   // Fecha y hora: Sábado 22 de Mayo de 2027 a las 12:00h
