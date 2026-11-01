@@ -39,16 +39,16 @@ Una vez ejecutado el comando, abre en tu navegador:
 2. **`asistencia.html` (Formulario de Confirmación)**:
    - **Nombre y apellidos**.
    - **¿Podrás asistir?** (Sí / No).
-   - **¿Vienes acompañado? (Checkbox)**: Al marcarlo permite añadir acompañantes con su nombre y selección de si es pareja/adulto o niño.
-   - **¿Alergia o intolerancia?**: Checkbox que despliega campo para especificar cuál.
-   - Sin campos innecesarios (eliminados correo, bus y música).
+   - **Doble confirmación con resumen**: Para los que marcan que SÍ van, antes de enviar se abre una ventana modal con el desglose exacto (titular, acompañantes y alergias) para verificar que todo esté bien antes de confirmar definitivamente.
+   - **Dedicatoria para los que no asisten**: Si marcan que NO pueden asistir, se abre un espacio para dejar un mensaje con sus mejores deseos para los novios.
+   - **Acompañantes**: Selector segmentado moderno para indicar si es *Pareja / Adulto* o *Niño / Niña*.
+   - **Alergias o intolerancias**: Checkbox que despliega campo de especificación.
 
-3. **`dashboard.html` (Panel de Control de Asistencias)**:
+3. **`dashboard.html` (Panel de Control & Edición en Vivo)**:
+   - **Edición completa de registros**: Botón **✏️ Editar** en cada fila que permite modificar nombre, asistencia, añadir/quitar/cambiar acompañantes y alergias. Los cambios se sincronizan en tiempo real con Firebase Firestore.
+   - **Descarga en PDF**: Botón para exportar el listado completo y resumido en un archivo **PDF** maquetado y listo para imprimir o enviar al catering/finca.
    - Resumen en tiempo real: Total confirmaciones, total personas que asisten, desglose de adultos, niños, no asistentes y personas con alergias.
-   - **Tabla interactiva**: Lista todos los invitados, estado, acompañantes, total de personas por grupo y detalles de intolerancias.
    - Filtros rápidos (*Todos*, *Asisten*, *No Asisten*, *Con Alergias*) y barra de búsqueda en vivo.
-   - **Exportar a Excel / CSV** en un clic.
-   - Preparado con pantalla de acceso/login para cuando se vincule con Firebase Auth (por defecto en modo visualización directa en local).
 
 ---
 

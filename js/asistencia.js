@@ -1,6 +1,7 @@
 /**
  * ===================================================================
  * GESTOR DE CONFIRMACIÓN DE ASISTENCIA (asistencia.js)
+ * Sincronizado con Firebase Firestore & Doble Confirmación
  * ===================================================================
  */
 
@@ -11,6 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 let dbInstance = null;
+let pendingConfirmationData = null;
 
 async function setupFirebaseIfAvailable() {
   if (typeof ENABLE_FIREBASE !== "undefined" && ENABLE_FIREBASE && typeof firebase !== "undefined") {
@@ -27,7 +29,7 @@ async function setupFirebaseIfAvailable() {
 }
 
 /**
- * 1. Control de Acompañantes
+ * 1. Control de Acompañantes (Segmented Buttons: Pareja / Adulto vs Niño / Niña)
  */
 function initCompanionsSystem() {
   const companionCheckbox = document.getElementById("hasCompanion");
@@ -135,38 +137,43 @@ function initAllergyToggle() {
 }
 
 /**
- * 3. Envío del Formulario
+ * 3. Envío del Formulario & Doble Confirmación
  */
 function initAsistenciaForm() {
   const form = document.getElementById("form-asistencia");
   const submitBtn = document.getElementById("btn-submit-asistencia");
   const statusMsg = document.getElementById("asistencia-status-msg");
 
+  // Modales
+  const reviewModal = document.getElementById("asistencia-review-modal");
+  const reviewContent = document.getElementById("review-summary-content");
+  const btnCancelReview = document.getElementById("btn-cancel-review");
+  const btnConfirmFinal = document.getElementById("btn-confirm-final");
+
   if (!form) return;
 
   setupFirebaseIfAvailable();
 
-  // Controlar campos si marca "No podré asistir"
+  // Controlar campos si marca "Sí" o "No"
   const attendanceRadios = form.querySelectorAll('input[name="attendance"]');
-  const detailsSection = document.getElementById("attendance-extra-fields");
+  const extraYesFields = document.getElementById("attendance-extra-fields");
+  const extraNoFields = document.getElementById("decline-extra-fields");
 
   attendanceRadios.forEach(radio => {
     radio.addEventListener("change", (e) => {
       if (e.target.value === "no") {
-        if (detailsSection) detailsSection.style.display = "none";
+        if (extraYesFields) extraYesFields.style.display = "none";
+        if (extraNoFields) extraNoFields.style.display = "block";
       } else {
-        if (detailsSection) detailsSection.style.display = "flex";
+        if (extraYesFields) extraYesFields.style.display = "flex";
+        if (extraNoFields) extraNoFields.style.display = "none";
       }
     });
   });
 
-  form.addEventListener("submit", async (e) => {
+  // Interceptar submit
+  form.addEventListener("submit", (e) => {
     e.preventDefault();
-
-    if (submitBtn) {
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = `<span>Registrando confirmación...</span>`;
-    }
 
     const formData = new FormData(form);
     const attendanceVal = formData.get("attendance") || "yes";
@@ -185,7 +192,7 @@ function initAsistenciaForm() {
       });
     }
 
-    const confirmationData = {
+    const data = {
       id: "conf_" + Date.now() + "_" + Math.random().toString(36).substring(2, 6),
       fullName: (formData.get("fullName") || "").trim(),
       attendance: attendanceVal,
@@ -194,22 +201,98 @@ function initAsistenciaForm() {
       companions: companions,
       hasAllergies: hasAllergies,
       allergiesDetails: hasAllergies ? (formData.get("dietaryDetails") || "").trim() : "Ninguna",
+      dedication: (formData.get("declineMessage") || "").trim(),
       createdAt: new Date().toISOString()
     };
+
+    pendingConfirmationData = data;
+
+    // Si ASISTE: mostrar DOBLE CONFIRMACIÓN con resumen
+    if (attendanceVal === "yes") {
+      showReviewModal(data);
+    } else {
+      // Si NO asiste: guardar directamente
+      executeFinalSubmit(data);
+    }
+  });
+
+  // Botón cancelar en la doble confirmación
+  if (btnCancelReview) {
+    btnCancelReview.addEventListener("click", () => {
+      if (reviewModal) reviewModal.classList.remove("active");
+    });
+  }
+
+  // Botón confirmar definitivamente
+  if (btnConfirmFinal) {
+    btnConfirmFinal.addEventListener("click", () => {
+      if (reviewModal) reviewModal.classList.remove("active");
+      if (pendingConfirmationData) {
+        executeFinalSubmit(pendingConfirmationData);
+      }
+    });
+  }
+
+  function showReviewModal(data) {
+    if (!reviewModal || !reviewContent) return;
+
+    let companionsSummary = `<span style="color: var(--text-muted);">Sin acompañantes (1 persona en total)</span>`;
+    if (data.companions.length > 0) {
+      companionsSummary = `
+        <div style="margin-top: 0.3rem;">
+          ${data.companions.map(c => `
+            <span class="review-companion-badge">
+              ${c.type === 'niño' ? '🧒 Niño/a:' : '👤 Pareja/Adulto:'} <strong>${c.name}</strong>
+            </span>
+          `).join("")}
+        </div>
+        <div style="font-size: 0.85rem; color: var(--gold-light); margin-top: 0.4rem;">
+          Total grupo: <strong>${1 + data.companions.length} personas</strong>
+        </div>
+      `;
+    }
+
+    let allergySummary = `<span style="color: var(--text-muted);">Ninguna</span>`;
+    if (data.hasAllergies && data.allergiesDetails) {
+      allergySummary = `<strong style="color: #f39c12;">⚠️ ${data.allergiesDetails}</strong>`;
+    }
+
+    reviewContent.innerHTML = `
+      <div class="review-item-row">
+        <span class="review-label">Titular Principal</span>
+        <span class="review-val"><strong>${data.fullName}</strong></span>
+      </div>
+      <div class="review-item-row">
+        <span class="review-label">¿Asistirás?</span>
+        <span class="review-val" style="color: #2ecc71;">✓ Sí, asistiré</span>
+      </div>
+      <div class="review-item-row">
+        <span class="review-label">Acompañantes</span>
+        <div class="review-val">${companionsSummary}</div>
+      </div>
+      <div class="review-item-row">
+        <span class="review-label">Alergias o Intolerancias</span>
+        <div class="review-val">${allergySummary}</div>
+      </div>
+    `;
+
+    reviewModal.classList.add("active");
+  }
+
+  async function executeFinalSubmit(confirmationData) {
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `<span>Registrando confirmación...</span>`;
+    }
 
     try {
       if (dbInstance && typeof ENABLE_FIREBASE !== "undefined" && ENABLE_FIREBASE) {
         const collectionName = typeof FIRESTORE_COLLECTION !== "undefined" ? FIRESTORE_COLLECTION : "confirmaciones_boda";
         await dbInstance.collection(collectionName).add(confirmationData);
         console.log("✅ Confirmación guardada en Firebase Firestore:", confirmationData);
-      } else {
-        // Almacenamiento local de respaldo
-        const stored = JSON.parse(localStorage.getItem("confirmaciones_boda") || "[]");
-        stored.push(confirmationData);
-        localStorage.setItem("confirmaciones_boda", JSON.stringify(stored));
       }
 
-      // También guardamos una copia en localStorage por seguridad offline
+      // Guardar también copia local por respaldo
       try {
         const backup = JSON.parse(localStorage.getItem("confirmaciones_boda") || "[]");
         backup.push(confirmationData);
@@ -218,11 +301,16 @@ function initAsistenciaForm() {
 
       showSuccessModal(confirmationData);
       form.reset();
-      // Reset dinámicos
+
+      // Resetear estados dinámicos
       const companionsBlock = document.getElementById("companions-block");
       const allergyBox = document.getElementById("allergy-details-box");
+      const extraYes = document.getElementById("attendance-extra-fields");
+      const extraNo = document.getElementById("decline-extra-fields");
       if (companionsBlock) companionsBlock.classList.remove("active");
       if (allergyBox) allergyBox.classList.remove("active");
+      if (extraYes) extraYes.style.display = "flex";
+      if (extraNo) extraNo.style.display = "none";
       const companionsList = document.getElementById("companions-list");
       if (companionsList) companionsList.innerHTML = "";
     } catch (err) {
@@ -237,7 +325,7 @@ function initAsistenciaForm() {
         submitBtn.innerHTML = `<span>Confirmar Asistencia</span>`;
       }
     }
-  });
+  }
 }
 
 function showSuccessModal(data) {
@@ -258,6 +346,7 @@ function showSuccessModal(data) {
     } else {
       msgBody.innerHTML = `
         Agradecemos que nos lo hayas comunicado, <strong>${data.fullName}</strong>.<br>
+        ${data.dedication ? `<em>"Tu dedicatoria ha sido guardada con cariño."</em><br>` : ""}
         Lamentamos que no puedas venir, ¡pero te tendremos muy presente en este día tan especial!
       `;
     }
@@ -270,4 +359,3 @@ function showSuccessModal(data) {
     closeBtn.onclick = () => modal.classList.remove("active");
   }
 }
-

@@ -52,8 +52,8 @@
             <button type="button" id="btn-refresh-data" class="btn-viking btn-viking-outline" style="min-height: 42px; padding: 0.5rem 1rem; font-size: 0.82rem;">
               <span>🔄 Actualizar</span>
             </button>
-            <button type="button" id="btn-export-csv" class="btn-viking btn-viking-primary" style="min-height: 42px; padding: 0.5rem 1.2rem; font-size: 0.82rem;">
-              <span>📊 Exportar a Excel / CSV</span>
+            <button type="button" id="btn-export-pdf" class="btn-viking btn-viking-primary" style="min-height: 42px; padding: 0.5rem 1.2rem; font-size: 0.82rem;">
+              <span>📄 Descargar Listado en PDF</span>
             </button>
           </div>
         </div>
@@ -69,7 +69,7 @@
             <div class="stat-value" id="stat-total-adults">0</div>
           </div>
           <div class="stat-card">
-            <div class="stat-label">Niños</div>
+            <div class="stat-label">Niños / Niñas</div>
             <div class="stat-value" id="stat-total-children">0</div>
           </div>
           <div class="stat-card">
@@ -97,7 +97,7 @@
 
           <div class="search-box">
             <span class="search-icon">🔍</span>
-            <input type="text" id="search-input" placeholder="Buscar por nombre o alergia..." />
+            <input type="text" id="search-input" placeholder="Buscar por nombre, acompañante o alergia..." />
           </div>
         </div>
 
@@ -112,7 +112,9 @@
                 <th>Acompañantes</th>
                 <th>Total</th>
                 <th>Alergia / Intolerancia</th>
+                <th>Dedicatoria</th>
                 <th>Fecha</th>
+                <th style="text-align: center;">Acciones</th>
               </tr>
             </thead>
             <tbody id="confirmations-tbody">
@@ -139,13 +141,83 @@
     </svg>
   </button>
 
-  <!-- MODAL / GATE DE ACCESO (Preparado para cuando se sincronice con Firebase Auth) -->
+  <!-- MODAL PARA EDITAR INVITADO / ACOMPAÑANTES -->
+  <div class="dash-modal-overlay" id="edit-modal">
+    <div class="dash-modal-box">
+      <div class="dash-modal-header">
+        <h3 style="font-size: 1.25rem; font-weight: 700; color: #fff;">Editar Registro de Asistencia</h3>
+        <button type="button" class="dash-modal-close" id="btn-close-edit">&times;</button>
+      </div>
+
+      <form id="form-edit-confirmation" class="dash-edit-form">
+        <input type="hidden" id="edit-record-id" />
+
+        <div class="dash-form-group">
+          <label class="dash-label">Nombre y Apellidos</label>
+          <input type="text" id="edit-fullName" class="form-input" required />
+        </div>
+
+        <div class="dash-form-group">
+          <label class="dash-label">¿Asistencia?</label>
+          <div style="display: flex; gap: 1rem;">
+            <label style="display: flex; align-items: center; gap: 0.4rem; cursor: pointer;">
+              <input type="radio" name="edit-attendance" value="yes" id="edit-att-yes" />
+              <span>Sí, asistirá</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 0.4rem; cursor: pointer;">
+              <input type="radio" name="edit-attendance" value="no" id="edit-att-no" />
+              <span>No asistirá</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- SECCIÓN ACOMPAÑANTES EN EDICIÓN -->
+        <div id="edit-companions-section" class="dash-form-group">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <label class="dash-label" style="margin-bottom: 0;">Acompañantes</label>
+            <button type="button" id="btn-add-edit-companion" class="btn-viking btn-viking-outline" style="min-height: 32px; padding: 0.25rem 0.75rem; font-size: 0.75rem;">
+              <span>+ Añadir</span>
+            </button>
+          </div>
+          <div id="edit-companions-list" style="display: flex; flex-direction: column; gap: 0.6rem;">
+            <!-- Filas dinámicas en edición -->
+          </div>
+        </div>
+
+        <div class="dash-form-group">
+          <label class="dash-label">Alergias o Intolerancias</label>
+          <input type="text" id="edit-dietaryDetails" class="form-input" placeholder="Ej. Celíaco, lactosa o 'Ninguna'" />
+        </div>
+
+        <div class="dash-form-group">
+          <label class="dash-label">Dedicatoria / Mensaje</label>
+          <textarea id="edit-dedication" class="form-textarea" placeholder="Palabras o mensaje dejado..." style="min-height: 80px;"></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; gap: 0.8rem;">
+          <button type="button" id="btn-delete-record" class="btn-viking" style="background: rgba(231, 76, 60, 0.15); color: #ff6b6b; border: 1px solid #e74c3c; min-height: 42px; padding: 0.5rem 1rem; font-size: 0.8rem;">
+            <span>Eliminar</span>
+          </button>
+          <div style="display: flex; gap: 0.6rem;">
+            <button type="button" id="btn-cancel-edit" class="btn-viking btn-viking-outline" style="min-height: 42px; padding: 0.5rem 1.2rem; font-size: 0.82rem;">
+              <span>Cancelar</span>
+            </button>
+            <button type="submit" class="btn-viking btn-viking-primary" style="min-height: 42px; padding: 0.5rem 1.4rem; font-size: 0.82rem;">
+              <span>Guardar Cambios</span>
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL / GATE DE ACCESO (Preparado para Firebase Auth) -->
   <div class="login-gate-overlay" id="login-gate">
     <div class="login-card">
       <img src="assets/svg/vegvisir.svg" style="width: 60px; height: 60px; margin-bottom: 1rem;" alt="" />
       <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem; color: #fff;">Acceso al Panel</h3>
       <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;">
-        Introduce la clave de acceso de Naiara y Guillermo para ver las confirmaciones:
+        Introduce la clave de acceso para ver las confirmaciones:
       </p>
 
       <form id="admin-login-form">
@@ -168,6 +240,15 @@
     </div>
   </div>
 
+  <!-- Toast de notificación -->
+  <div class="toast-notice" id="copy-toast">
+    ¡Actualizado con éxito!
+  </div>
+
+  <!-- Librería jsPDF + AutoTable para descarga de PDF profesional -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
   <!-- Firebase Scripts (Compat v9) -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -179,4 +260,3 @@
   <script src="js/dashboard.js"></script>
 </body>
 </html>
-

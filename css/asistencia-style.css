@@ -381,6 +381,54 @@
   gap: 0.75rem;
 }
 
+/* Tarjeta de Resumen en Doble Confirmación */
+.review-summary-card {
+  background: rgba(10, 13, 19, 0.85);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.review-item-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+  padding-bottom: 0.6rem;
+}
+
+.review-item-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.review-label {
+  font-family: var(--font-title);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gold-light);
+  font-weight: 600;
+}
+
+.review-val {
+  font-size: 0.96rem;
+  color: #fff;
+}
+
+.review-companion-badge {
+  display: inline-block;
+  background: rgba(212, 175, 55, 0.1);
+  border: 1px solid var(--border-color);
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.82rem;
+  margin: 0.2rem 0.3rem 0.2rem 0;
+}
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-6px); }
   to { opacity: 1; transform: translateY(0); }
