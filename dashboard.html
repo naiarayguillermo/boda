@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
-  <title>Panel de Confirmaciones · Boda Naiara & Guillermo</title>
+  <title>Panel de Confirmaciones · Boda Naiara &amp; Guillermo</title>
   <meta name="robots" content="noindex, nofollow" />
   
   <link rel="icon" type="image/svg+xml" href="assets/svg/vegvisir.svg" />
@@ -22,14 +22,16 @@
       <div class="nav-container">
         <a href="index.html" class="nav-brand">
           <span class="nav-logo-rune">ᚾ·ᚷ</span>
-          <span class="nav-names">Naiara & Guillermo</span>
+          <span class="nav-names">Naiara &amp; Guillermo</span>
         </a>
-        <div style="display: flex; gap: 0.8rem; align-items: center;">
+        <div style="display: flex; gap: 0.8rem; align-items: center; flex-wrap: wrap;">
+          <!-- Contenedor de logout (se rellena dinámicamente al autenticarse) -->
+          <div id="logout-container" style="display: none;"></div>
           <a href="asistencia.html" class="btn-viking btn-viking-outline" style="min-height: 38px; padding: 0.35rem 0.9rem; font-size: 0.78rem;">
-            <span>Ir al Formulario</span>
+            <span>Formulario</span>
           </a>
           <a href="index.html" class="btn-viking btn-viking-outline" style="min-height: 38px; padding: 0.35rem 0.9rem; font-size: 0.78rem;">
-            <span>← Ver Invitación</span>
+            <span>← Invitación</span>
           </a>
         </div>
       </div>
@@ -53,7 +55,7 @@
               <span>🔄 Actualizar</span>
             </button>
             <button type="button" id="btn-export-pdf" class="btn-viking btn-viking-primary" style="min-height: 42px; padding: 0.5rem 1.2rem; font-size: 0.82rem;">
-              <span>📄 Descargar Listado en PDF</span>
+              <span>📄 Descargar PDF</span>
             </button>
           </div>
         </div>
@@ -106,15 +108,15 @@
           <table class="dash-table">
             <thead>
               <tr>
-                <th>#</th>
-                <th>Invitado Principal</th>
-                <th>Estado</th>
-                <th>Acompañantes</th>
-                <th>Total</th>
-                <th>Alergia / Intolerancia</th>
-                <th>Dedicatoria</th>
-                <th>Fecha</th>
-                <th style="text-align: center;">Acciones</th>
+                <th class="col-num">#</th>
+                <th class="col-name">Invitado Principal</th>
+                <th class="col-status">Estado</th>
+                <th class="col-companions">Acompañantes</th>
+                <th class="col-total">Total</th>
+                <th class="col-allergy">Alergia / Intolerancia</th>
+                <th class="col-dedication">Dedicatoria</th>
+                <th class="col-date">Fecha</th>
+                <th class="col-actions" style="text-align: center;">Acciones</th>
               </tr>
             </thead>
             <tbody id="confirmations-tbody">
@@ -128,7 +130,7 @@
 
     <!-- FOOTER -->
     <footer class="viking-footer">
-      <div class="footer-names">Naiara & Guillermo · Panel de Gestión</div>
+      <div class="footer-names">Naiara &amp; Guillermo · Panel de Gestión</div>
       <p class="footer-quote">"El registro sagrado de los clanes"</p>
     </footer>
 
@@ -211,31 +213,54 @@
     </div>
   </div>
 
-  <!-- MODAL / GATE DE ACCESO (Preparado para Firebase Auth) -->
-  <div class="login-gate-overlay" id="login-gate">
+  <!-- GATE DE ACCESO CON FIREBASE AUTH -->
+  <div class="login-gate-overlay active" id="login-gate">
     <div class="login-card">
-      <img src="assets/svg/vegvisir.svg" style="width: 60px; height: 60px; margin-bottom: 1rem;" alt="" />
-      <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem; color: #fff;">Acceso al Panel</h3>
-      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;">
-        Introduce la clave de acceso para ver las confirmaciones:
+      <img src="assets/svg/vegvisir.svg" style="width: 64px; height: 64px; margin-bottom: 1.2rem; opacity: 0.9;" alt="" />
+      
+      <div class="login-rune-title">ᚱᛖᛊᛏᚱᛁᚲᛏᚢᛋ</div>
+      <h3 class="login-title">Zona Restringida</h3>
+      <p class="login-subtitle">
+        Acceso exclusivo para los novios.<br/>
+        Introduce tus credenciales para continuar.
       </p>
 
-      <form id="admin-login-form">
-        <input 
-          type="password" 
-          id="adminPin" 
-          class="form-input" 
-          placeholder="Clave de acceso" 
-          required 
-          style="margin-bottom: 1rem; text-align: center; font-size: 1.1rem; letter-spacing: 0.15em;" 
-        />
-        <div id="login-err-msg" style="display: none; color: #ff6b6b; font-size: 0.85rem; margin-bottom: 1rem;"></div>
-        <button type="submit" class="btn-viking btn-viking-primary" style="width: 100%;">
-          <span>Entrar al Panel</span>
+      <form id="admin-login-form" autocomplete="off">
+        <div class="login-field">
+          <label class="login-label">Email</label>
+          <input 
+            type="email" 
+            id="adminEmail" 
+            class="form-input" 
+            placeholder="tu@email.es" 
+            required 
+            autocomplete="email"
+          />
+        </div>
+        <div class="login-field">
+          <label class="login-label">Contraseña</label>
+          <input 
+            type="password" 
+            id="adminPassword" 
+            class="form-input" 
+            placeholder="••••••••" 
+            required 
+            autocomplete="current-password"
+          />
+        </div>
+
+        <div id="login-err-msg" class="login-error" style="display: none;"></div>
+        <div id="login-spinner" class="login-spinner" style="display: none;">
+          <span>Verificando...</span>
+        </div>
+
+        <button type="submit" class="btn-viking btn-viking-primary" style="width: 100%; min-height: 48px; font-size: 0.95rem; margin-top: 0.5rem;">
+          <span>⚔️ Acceder al Panel</span>
         </button>
       </form>
-      <div style="margin-top: 1.2rem;">
-        <a href="index.html" style="color: var(--text-muted); font-size: 0.82rem; text-decoration: none;">← Volver a la web</a>
+
+      <div style="margin-top: 1.4rem;">
+        <a href="index.html" style="color: var(--text-muted); font-size: 0.82rem; text-decoration: none; opacity: 0.7;">← Volver a la invitación</a>
       </div>
     </div>
   </div>
@@ -245,13 +270,14 @@
     ¡Actualizado con éxito!
   </div>
 
-  <!-- Librería jsPDF + AutoTable para descarga de PDF profesional -->
+  <!-- Librería jsPDF + AutoTable -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 
-  <!-- Firebase Scripts (Compat v9) -->
+  <!-- Firebase Scripts (Compat v9) — Auth incluido -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
   <!-- Lógica y configuración -->
   <script src="js/config.js"></script>

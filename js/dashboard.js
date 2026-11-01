@@ -1,88 +1,172 @@
 /**
  * ===================================================================
  * MOTOR DEL PANEL DE GESTIÓN (dashboard.js)
- * Sincronizado con Firebase Firestore, Edición en Vivo y Exportación PDF
+ * Sincronizado con Firebase Firestore + Firebase Authentication
+ * Acceso exclusivo para el usuario autorizado (naiarayguillermo)
  * ===================================================================
  */
 
 document.addEventListener("DOMContentLoaded", () => {
-  checkAuthAndLoad();
+  initAuth();
 });
 
 let allConfirmations = [];
 let activeFilter = "all";
 let searchQuery = "";
 let dbInstance = null;
+let authInstance = null;
 
-function checkAuthAndLoad() {
-  const gate = document.getElementById("login-gate");
-  if (typeof REQUIRE_AUTH !== "undefined" && REQUIRE_AUTH) {
-    if (!sessionStorage.getItem("admin_authenticated")) {
-      if (gate) gate.classList.add("active");
+/* ===================================================================
+   1. AUTENTICACIÓN CON FIREBASE AUTH
+   =================================================================== */
+
+function initAuth() {
+  // Si Firebase Auth está disponible, usarlo como fuente de verdad
+  if (typeof firebase !== "undefined" && ENABLE_FIREBASE) {
+    try {
+      if (!firebase.apps.length) {
+        firebase.initializeApp(FIREBASE_CONFIG);
+      }
+      authInstance = firebase.auth();
+      dbInstance = firebase.firestore();
+
+      // Escuchar cambios de sesión (se llama automáticamente al cargar)
+      authInstance.onAuthStateChanged((user) => {
+        const allowedEmail = typeof ALLOWED_USER_EMAIL !== "undefined"
+          ? ALLOWED_USER_EMAIL
+          : "naiarayguillermo@boda.es";
+
+        if (user && user.email === allowedEmail) {
+          // Usuario autorizado → mostrar dashboard
+          hiddenGate();
+          showLogoutButton(user.email);
+          initFirebaseDashboard();
+          initToolbar();
+          initEditModal();
+        } else {
+          if (user) {
+            // Usuario logueado pero NO autorizado → cerrar sesión inmediatamente
+            authInstance.signOut();
+          }
+          // Mostrar pantalla de acceso restringido
+          showGate();
+        }
+      });
+
       initLoginForm();
       return;
+    } catch (err) {
+      console.warn("Error al inicializar Firebase Auth:", err);
     }
   }
 
-  initFirebaseDashboard();
+  // Fallback: sin Firebase, acceso directo (solo en desarrollo)
+  hiddenGate();
+  loadFromLocal();
   initToolbar();
   initEditModal();
+}
+
+function showGate() {
+  const gate = document.getElementById("login-gate");
+  if (gate) gate.classList.add("active");
+}
+
+function hiddenGate() {
+  const gate = document.getElementById("login-gate");
+  if (gate) gate.classList.remove("active");
+}
+
+function showLogoutButton(email) {
+  const logoutContainer = document.getElementById("logout-container");
+  if (logoutContainer) {
+    logoutContainer.innerHTML = `
+      <span style="font-size: 0.8rem; color: var(--text-muted); margin-right: 0.5rem;">
+        🔓 ${email}
+      </span>
+      <button type="button" id="btn-logout" class="btn-viking btn-viking-outline"
+        style="min-height: 36px; padding: 0.3rem 0.8rem; font-size: 0.78rem; color: #ff6b6b; border-color: rgba(231,76,60,0.4);">
+        <span>Cerrar sesión</span>
+      </button>
+    `;
+    document.getElementById("btn-logout")?.addEventListener("click", () => {
+      if (authInstance) {
+        authInstance.signOut();
+      }
+    });
+    logoutContainer.style.display = "flex";
+    logoutContainer.style.alignItems = "center";
+    logoutContainer.style.gap = "0.5rem";
+  }
 }
 
 function initLoginForm() {
   const form = document.getElementById("admin-login-form");
   const errEl = document.getElementById("login-err-msg");
+  const spinner = document.getElementById("login-spinner");
   if (!form) return;
 
-  form.addEventListener("submit", (e) => {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const pin = document.getElementById("adminPin")?.value.trim();
-    if (pin === "22052027" || pin === "admin") {
-      sessionStorage.setItem("admin_authenticated", "true");
-      document.getElementById("login-gate")?.classList.remove("active");
-      initFirebaseDashboard();
-      initToolbar();
-      initEditModal();
-    } else {
+    const email = document.getElementById("adminEmail")?.value.trim();
+    const password = document.getElementById("adminPassword")?.value;
+
+    if (!email || !password) return;
+
+    if (errEl) errEl.style.display = "none";
+    if (spinner) spinner.style.display = "block";
+
+    const submitBtn = form.querySelector("[type='submit']");
+    if (submitBtn) submitBtn.disabled = true;
+
+    try {
+      await authInstance.signInWithEmailAndPassword(email, password);
+      // onAuthStateChanged se encargará de mostrar/ocultar el gate
+    } catch (err) {
+      console.warn("Error de login:", err.code);
+      let msg = "Credenciales incorrectas. Inténtalo de nuevo.";
+      if (err.code === "auth/user-not-found") msg = "Usuario no encontrado.";
+      if (err.code === "auth/wrong-password") msg = "Contraseña incorrecta.";
+      if (err.code === "auth/invalid-email") msg = "Email no válido.";
+      if (err.code === "auth/too-many-requests") msg = "Demasiados intentos. Espera unos minutos.";
+
       if (errEl) {
-        errEl.textContent = "Clave incorrecta. Pista: fecha del enlace (22052027)";
+        errEl.textContent = msg;
         errEl.style.display = "block";
       }
+    } finally {
+      if (spinner) spinner.style.display = "none";
+      if (submitBtn) submitBtn.disabled = false;
     }
   });
 }
 
-function initFirebaseDashboard() {
-  if (typeof ENABLE_FIREBASE !== "undefined" && ENABLE_FIREBASE && typeof firebase !== "undefined") {
-    try {
-      if (!firebase.apps.length) {
-        firebase.initializeApp(FIREBASE_CONFIG);
-      }
-      dbInstance = firebase.firestore();
-      console.log("🔥 Dashboard conectado a Firestore.");
+/* ===================================================================
+   2. CARGA DE DATOS DE FIRESTORE
+   =================================================================== */
 
-      const collectionName = typeof FIRESTORE_COLLECTION !== "undefined" ? FIRESTORE_COLLECTION : "confirmaciones_boda";
-      
-      // Escucha en tiempo real de nuevas confirmaciones
-      dbInstance.collection(collectionName).onSnapshot(
-        (snapshot) => {
-          const list = [];
-          snapshot.forEach(doc => {
-            list.push({ id: doc.id, ...doc.data() });
-          });
-          list.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
-          allConfirmations = list;
-          renderDashboard();
-        },
-        (error) => {
-          console.warn("Error en tiempo real de Firestore, cargando de respaldo local:", error);
-          loadFromLocal();
-        }
-      );
-      return;
-    } catch (err) {
-      console.warn("Fallo al inicializar Firebase en dashboard:", err);
-    }
+function initFirebaseDashboard() {
+  if (dbInstance) {
+    const collectionName = typeof FIRESTORE_COLLECTION !== "undefined"
+      ? FIRESTORE_COLLECTION
+      : "confirmaciones_boda";
+
+    dbInstance.collection(collectionName).onSnapshot(
+      (snapshot) => {
+        const list = [];
+        snapshot.forEach(doc => {
+          list.push({ id: doc.id, ...doc.data() });
+        });
+        list.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+        allConfirmations = list;
+        renderDashboard();
+      },
+      (error) => {
+        console.warn("Error en tiempo real de Firestore:", error);
+        loadFromLocal();
+      }
+    );
+    return;
   }
 
   loadFromLocal();
@@ -94,6 +178,10 @@ function loadFromLocal() {
   allConfirmations = localData;
   renderDashboard();
 }
+
+/* ===================================================================
+   3. RENDER DEL PANEL
+   =================================================================== */
 
 function renderDashboard() {
   renderStats();
@@ -181,11 +269,12 @@ function renderTable() {
 
     let companionsHtml = `<span style="color: var(--text-muted); font-size: 0.82rem;">Ninguno</span>`;
     if (isYes && item.companions && item.companions.length > 0) {
-      companionsHtml = item.companions.map(c => `
+      companionsHtml = `<div class="companions-cell">${item.companions.map(c => `
         <span class="badge-companion" title="${c.type === 'niño' ? 'Niño / Niña' : 'Pareja / Adulto'}">
-          ${c.type === 'niño' ? '🧒 Niño/a:' : '👤'} ${c.name}
+          ${c.type === 'niño' ? '🧒' : '👤'} ${c.name}
+          <em style="font-size:0.72rem; opacity:0.7;">${c.type === 'niño' ? 'niño/a' : 'adulto'}</em>
         </span>
-      `).join("");
+      `).join("")}</div>`;
     }
 
     const totalPersons = isYes ? (1 + (item.companions ? item.companions.length : 0)) : 0;
@@ -197,7 +286,7 @@ function renderTable() {
 
     let dedicationHtml = `<span style="color: var(--text-muted); font-size: 0.82rem;">-</span>`;
     if (item.dedication) {
-      dedicationHtml = `<span style="font-size: 0.85rem; font-style: italic;">"${item.dedication}"</span>`;
+      dedicationHtml = `<span class="dedication-text">"${item.dedication}"</span>`;
     }
 
     let dateStr = "";
@@ -208,15 +297,15 @@ function renderTable() {
 
     return `
       <tr>
-        <td><strong>#${idx + 1}</strong></td>
-        <td><strong>${item.fullName}</strong></td>
-        <td>${statusBadge}</td>
-        <td>${companionsHtml}</td>
-        <td><strong>${totalPersons}</strong></td>
-        <td>${allergyHtml}</td>
-        <td>${dedicationHtml}</td>
-        <td><small style="color: var(--text-muted);">${dateStr}</small></td>
-        <td style="text-align: center;">
+        <td class="col-num"><strong>#${idx + 1}</strong></td>
+        <td class="col-name"><strong>${item.fullName}</strong></td>
+        <td class="col-status">${statusBadge}</td>
+        <td class="col-companions">${companionsHtml}</td>
+        <td class="col-total"><strong>${totalPersons > 0 ? totalPersons : "—"}</strong></td>
+        <td class="col-allergy">${allergyHtml}</td>
+        <td class="col-dedication">${dedicationHtml}</td>
+        <td class="col-date"><small style="color: var(--text-muted);">${dateStr}</small></td>
+        <td class="col-actions">
           <button type="button" class="btn-action-edit" data-id="${item.id}">
             <span>✏️ Editar</span>
           </button>
@@ -225,7 +314,6 @@ function renderTable() {
     `;
   }).join("");
 
-  // Conectar botones de edición
   document.querySelectorAll(".btn-action-edit").forEach(btn => {
     btn.addEventListener("click", () => {
       const recordId = btn.getAttribute("data-id");
@@ -233,6 +321,10 @@ function renderTable() {
     });
   });
 }
+
+/* ===================================================================
+   4. TOOLBAR: FILTROS, BÚSQUEDA, PDF, REFRESH
+   =================================================================== */
 
 function initToolbar() {
   document.querySelectorAll(".filter-btn").forEach(btn => {
@@ -252,7 +344,6 @@ function initToolbar() {
     });
   }
 
-  // Exportar a PDF
   const exportPdfBtn = document.getElementById("btn-export-pdf");
   if (exportPdfBtn) {
     exportPdfBtn.addEventListener("click", exportToPDF);
@@ -266,9 +357,10 @@ function initToolbar() {
   }
 }
 
-/**
- * 4. Exportar a PDF con jsPDF y AutoTable
- */
+/* ===================================================================
+   5. EXPORTAR A PDF
+   =================================================================== */
+
 function exportToPDF() {
   if (allConfirmations.length === 0) {
     alert("No hay confirmaciones para exportar en este momento.");
@@ -281,41 +373,28 @@ function exportToPDF() {
   }
 
   const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({
-    orientation: "landscape",
-    unit: "mm",
-    format: "a4"
-  });
+  const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
 
-  // Título y Cabecera del PDF
   doc.setFontSize(18);
-  doc.setTextColor(212, 175, 55); // Color dorado vikingo
+  doc.setTextColor(212, 175, 55);
   doc.text("Boda Naiara & Guillermo · Listado de Asistencia", 14, 16);
 
   doc.setFontSize(10);
   doc.setTextColor(120, 120, 120);
   doc.text(`Fecha del Enlace: 22 de Mayo de 2027 · Asejar Viveros (Elche) | Generado: ${new Date().toLocaleDateString("es-ES")}`, 14, 23);
 
-  // Métricas de resumen
-  let totalAttending = 0;
-  let totalAdults = 0;
-  let totalChildren = 0;
-  let totalDeclined = 0;
-  let totalAllergies = 0;
+  let totalAttending = 0, totalAdults = 0, totalChildren = 0, totalDeclined = 0, totalAllergies = 0;
 
   allConfirmations.forEach(c => {
     if (c.attendance === "yes") {
-      totalAttending += 1;
-      totalAdults += 1;
+      totalAttending += 1; totalAdults += 1;
       if (c.companions) {
         c.companions.forEach(comp => {
           totalAttending += 1;
           comp.type === "niño" ? totalChildren++ : totalAdults++;
         });
       }
-    } else {
-      totalDeclined += 1;
-    }
+    } else { totalDeclined += 1; }
     if (c.hasAllergies && c.allergiesDetails !== "Ninguna") totalAllergies++;
   });
 
@@ -325,11 +404,9 @@ function exportToPDF() {
   doc.setTextColor(40, 40, 40);
   doc.text(
     `Total Respuestas: ${allConfirmations.length}  |  Asistentes Totales: ${totalAttending} (Adultos: ${totalAdults}, Niños/as: ${totalChildren})  |  No Asisten: ${totalDeclined}  |  Alergias/Dietas: ${totalAllergies}`,
-    18,
-    34
+    18, 34
   );
 
-  // Filas para la tabla
   const tableRows = allConfirmations.map((item, idx) => {
     const isYes = item.attendance === "yes";
     const status = isYes ? "SÍ Asiste" : "NO Asiste";
@@ -340,33 +417,16 @@ function exportToPDF() {
     const allergies = item.hasAllergies && item.allergiesDetails ? item.allergiesDetails : "Ninguna";
     const ded = item.dedication ? item.dedication : "-";
 
-    return [
-      idx + 1,
-      item.fullName || "-",
-      status,
-      comps,
-      totalP,
-      allergies,
-      ded
-    ];
+    return [idx + 1, item.fullName || "-", status, comps, totalP, allergies, ded];
   });
 
-  // Generar tabla con AutoTable
   doc.autoTable({
     startY: 43,
     head: [["#", "Invitado Principal", "Estado", "Acompañantes", "Total", "Alergias / Dietas", "Dedicatoria / Mensaje"]],
     body: tableRows,
     theme: "striped",
-    headStyles: {
-      fillColor: [20, 26, 38],
-      textColor: [245, 225, 151],
-      fontSize: 9,
-      fontStyle: "bold"
-    },
-    styles: {
-      fontSize: 8.5,
-      cellPadding: 3
-    },
+    headStyles: { fillColor: [20, 26, 38], textColor: [245, 225, 151], fontSize: 9, fontStyle: "bold" },
+    styles: { fontSize: 8.5, cellPadding: 3 },
     columnStyles: {
       0: { cellWidth: 10, halign: "center" },
       1: { cellWidth: 45 },
@@ -382,9 +442,10 @@ function exportToPDF() {
   doc.save(fileName);
 }
 
-/**
- * 5. Módulo de Edición de Invitados & Acompañantes
- */
+/* ===================================================================
+   6. MODAL DE EDICIÓN DE INVITADOS
+   =================================================================== */
+
 function initEditModal() {
   const modal = document.getElementById("edit-modal");
   const form = document.getElementById("form-edit-confirmation");
@@ -400,14 +461,10 @@ function initEditModal() {
   if (closeBtn) closeBtn.onclick = closeModal;
   if (cancelBtn) cancelBtn.onclick = closeModal;
 
-  // Añadir acompañante dentro del modal de edición
   if (addCompBtn && compList) {
-    addCompBtn.addEventListener("click", () => {
-      addEditCompanionRow("", "pareja");
-    });
+    addCompBtn.addEventListener("click", () => addEditCompanionRow("", "pareja"));
   }
 
-  // Guardar cambios
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const id = document.getElementById("edit-record-id").value;
@@ -419,51 +476,41 @@ function initEditModal() {
     const dietaryDetails = document.getElementById("edit-dietaryDetails").value.trim();
     const dedication = document.getElementById("edit-dedication").value.trim();
 
-    // Extraer acompañantes editados
     const comps = [];
     if (isYes && compList) {
       compList.querySelectorAll(".edit-companion-item").forEach(row => {
         const nameInput = row.querySelector(".edit-comp-name");
         const typeSelect = row.querySelector(".edit-comp-type");
         if (nameInput && nameInput.value.trim()) {
-          comps.push({
-            name: nameInput.value.trim(),
-            type: typeSelect ? typeSelect.value : "pareja"
-          });
+          comps.push({ name: nameInput.value.trim(), type: typeSelect ? typeSelect.value : "pareja" });
         }
       });
     }
 
     const updatedData = {
-      fullName: fullName,
+      fullName,
       attendance: isYes ? "yes" : "no",
       hasCompanion: comps.length > 0,
       companionsCount: comps.length,
       companions: comps,
       hasAllergies: Boolean(dietaryDetails && dietaryDetails.toLowerCase() !== "ninguna"),
       allergiesDetails: dietaryDetails || "Ninguna",
-      dedication: dedication,
+      dedication,
       updatedAt: new Date().toISOString()
     };
 
     try {
-      // 1. Actualizar en Firebase si está disponible
-      if (dbInstance && typeof ENABLE_FIREBASE !== "undefined" && ENABLE_FIREBASE) {
+      if (dbInstance && ENABLE_FIREBASE) {
         const col = typeof FIRESTORE_COLLECTION !== "undefined" ? FIRESTORE_COLLECTION : "confirmaciones_boda";
         await dbInstance.collection(col).doc(id).set(updatedData, { merge: true });
-        console.log("✅ Registro actualizado en Firestore:", id);
       }
 
-      // 2. Actualizar en local
       Object.assign(item, updatedData);
       try {
         const localData = JSON.parse(localStorage.getItem("confirmaciones_boda") || "[]");
         const idx = localData.findIndex(c => c.id === id);
-        if (idx !== -1) {
-          Object.assign(localData[idx], updatedData);
-        } else {
-          localData.push({ id, ...updatedData });
-        }
+        if (idx !== -1) Object.assign(localData[idx], updatedData);
+        else localData.push({ id, ...updatedData });
         localStorage.setItem("confirmaciones_boda", JSON.stringify(localData));
       } catch (err) {}
 
@@ -482,19 +529,15 @@ function initEditModal() {
     }
   });
 
-  // Eliminar registro
   if (deleteBtn) {
     deleteBtn.addEventListener("click", async () => {
       const id = document.getElementById("edit-record-id").value;
-      if (!confirm("¿Estás seguro de que deseas eliminar este registro de confirmación?")) {
-        return;
-      }
+      if (!confirm("¿Estás seguro de que deseas eliminar este registro de confirmación?")) return;
 
       try {
-        if (dbInstance && typeof ENABLE_FIREBASE !== "undefined" && ENABLE_FIREBASE) {
+        if (dbInstance && ENABLE_FIREBASE) {
           const col = typeof FIRESTORE_COLLECTION !== "undefined" ? FIRESTORE_COLLECTION : "confirmaciones_boda";
           await dbInstance.collection(col).doc(id).delete();
-          console.log("🗑️ Registro eliminado de Firestore:", id);
         }
 
         allConfirmations = allConfirmations.filter(c => c.id !== id);
@@ -529,13 +572,10 @@ function openEditModal(recordId) {
   document.getElementById("edit-dietaryDetails").value = item.allergiesDetails || "";
   document.getElementById("edit-dedication").value = item.dedication || "";
 
-  // Rellenar lista de acompañantes
   if (compList) {
     compList.innerHTML = "";
     if (item.companions && item.companions.length > 0) {
-      item.companions.forEach(c => {
-        addEditCompanionRow(c.name, c.type);
-      });
+      item.companions.forEach(c => addEditCompanionRow(c.name, c.type));
     }
   }
 
@@ -549,7 +589,7 @@ function addEditCompanionRow(name = "", type = "pareja") {
   const row = document.createElement("div");
   row.className = "edit-companion-item";
   row.innerHTML = `
-    <input type="text" class="form-input edit-comp-name" placeholder="Nombre acompañante" value="${name}" required style="min-height: 38px; padding: 0.4rem 0.8rem; font-size: 0.88rem;" />
+    <input type="text" class="form-input edit-comp-name" placeholder="Nombre acompañante" value="${name}" style="min-height: 38px; padding: 0.4rem 0.8rem; font-size: 0.88rem;" />
     <select class="form-select edit-comp-type" style="min-height: 38px; padding: 0.4rem 0.8rem; font-size: 0.85rem;">
       <option value="pareja" ${type === 'pareja' ? 'selected' : ''}>👤 Pareja / Adulto</option>
       <option value="niño" ${type === 'niño' ? 'selected' : ''}>🧒 Niño / Niña</option>
@@ -557,9 +597,6 @@ function addEditCompanionRow(name = "", type = "pareja") {
     <button type="button" class="btn-remove-edit-comp" title="Eliminar acompañante">&times;</button>
   `;
 
-  row.querySelector(".btn-remove-edit-comp").addEventListener("click", () => {
-    row.remove();
-  });
-
+  row.querySelector(".btn-remove-edit-comp").addEventListener("click", () => row.remove());
   compList.appendChild(row);
 }

@@ -18,8 +18,11 @@ const FIREBASE_CONFIG = {
 // Sincronización activada con Firebase
 const ENABLE_FIREBASE = true;
 
-// Requerir PIN/contraseña para entrar en dashboard.html (false = acceso directo)
-const REQUIRE_AUTH = false;
+// Requerir Firebase Auth para entrar en dashboard.html
+const REQUIRE_AUTH = true;
+
+// Email del único usuario autorizado a ver el dashboard
+const ALLOWED_USER_EMAIL = "naiarayguillermo@boda.es";
 
 // Nombre de la colección en Firestore donde se guardan los invitados
 const FIRESTORE_COLLECTION = "confirmaciones_boda";
@@ -28,5 +31,6 @@ if (typeof window !== "undefined") {
   window.FIREBASE_CONFIG = FIREBASE_CONFIG;
   window.ENABLE_FIREBASE = ENABLE_FIREBASE;
   window.REQUIRE_AUTH = REQUIRE_AUTH;
+  window.ALLOWED_USER_EMAIL = ALLOWED_USER_EMAIL;
   window.FIRESTORE_COLLECTION = FIRESTORE_COLLECTION;
 }
