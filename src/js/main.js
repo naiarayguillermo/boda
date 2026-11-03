@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initNavigation();
   initBackToTop();
   initCopyToClipboard();
+  initAtavioGallery();
   initDynamicContent();
 });
 
@@ -315,4 +316,73 @@ function showToast(toastEl, message) {
   setTimeout(() => {
     toastEl.classList.remove("show");
   }, 2800);
+}
+
+/**
+ * 8. GALERÍA DE ATAVÍO
+ */
+function initAtavioGallery() {
+  const lightbox = document.getElementById("atavio-lightbox");
+  const lightboxImage = document.getElementById("atavio-lightbox-image");
+  const categoryLabel = document.getElementById("atavio-lightbox-title");
+  const counter = document.getElementById("atavio-lightbox-counter");
+  const previousButton = lightbox?.querySelector(".atavio-lightbox-prev");
+  const nextButton = lightbox?.querySelector(".atavio-lightbox-next");
+  const thumbnails = document.querySelectorAll(".atavio-cat-card");
+
+  if (!lightbox || !lightboxImage || !categoryLabel || !counter || !previousButton || !nextButton) return;
+
+  let images = [];
+  let currentIndex = 0;
+  let lastTrigger = null;
+
+  const renderImage = () => {
+    const image = images[currentIndex];
+    if (!image) return;
+    lightboxImage.src = image.src;
+    lightboxImage.alt = image.alt;
+    counter.textContent = `${currentIndex + 1} de ${images.length}`;
+  };
+
+  const close = () => {
+    lightbox.classList.remove("open");
+    lightbox.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("gallery-locked");
+    lightboxImage.removeAttribute("src");
+    if (lastTrigger) lastTrigger.focus();
+  };
+
+  const move = (offset) => {
+    currentIndex = (currentIndex + offset + images.length) % images.length;
+    renderImage();
+  };
+
+  thumbnails.forEach(category => {
+    const categoryImages = [...category.querySelectorAll(".atavio-gallery-thumb img")];
+    category.querySelectorAll(".atavio-gallery-thumb").forEach((thumbnail, index) => {
+      thumbnail.addEventListener("click", () => {
+        images = categoryImages;
+        currentIndex = index;
+        lastTrigger = thumbnail;
+        categoryLabel.textContent = category.dataset.galleryCategory || "";
+        renderImage();
+        lightbox.classList.add("open");
+        lightbox.setAttribute("aria-hidden", "false");
+        document.body.classList.add("gallery-locked");
+        lightbox.querySelector(".atavio-lightbox-close").focus();
+      });
+    });
+  });
+
+  previousButton.addEventListener("click", () => move(-1));
+  nextButton.addEventListener("click", () => move(1));
+  lightbox.querySelectorAll("[data-lightbox-close]").forEach(element => {
+    element.addEventListener("click", close);
+  });
+  document.addEventListener("keydown", event => {
+    if (!lightbox.classList.contains("open")) return;
+    if (event.key === "Escape") close();
+    if (event.key === "ArrowLeft") move(-1);
+    if (event.key === "ArrowRight") move(1);
+  });
 }

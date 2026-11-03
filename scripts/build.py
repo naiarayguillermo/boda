@@ -24,7 +24,7 @@ def main() -> None:
     (DIST / "dashboard").mkdir()
     shutil.copy2(SRC / "pages" / "dashboard.html", DIST / "dashboard" / "index.html")
 
-    for directory in ("css", "js", "assets"):
+    for directory in ("css", "js", "assets", "images"):
         copy_tree(SRC / directory, DIST / directory)
 
     (DIST / ".nojekyll").touch()

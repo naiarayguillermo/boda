@@ -1,4 +1,4 @@
-# Boda de Naïara & Guillermo · 22 de Mayo de 2027
+ # Boda de Naïara & Guillermo · 22 de Mayo de 2027
 
 Invitación web de boda con estética nórdica/vikinga moderna, elegante y 100% optimizada para dispositivos móviles (Mobile-First) para **Naïara & Guillermo**.
 
@@ -58,7 +58,7 @@ Una vez ejecutado el comando, abre en tu navegador:
    - Historia de los clanes.
    - **Ubicación en Asejar Viveros**: mapa embebido, coordenadas GPS (`38°14'35.1"N 0°46'18.8"W`), botones directos con iconos SVG para Google Maps, Apple Maps y botón para copiar la dirección.
    - Cronograma de la jornada.
-   - **Atavío de Gala**: Estructura preparada para integrar fotos y sugerencias de vestimenta y peinados (Hombre, Mujer, Niño).
+   - **Atavío de Gala**: Galerías de inspiración ampliables con fotos y sugerencias de vestimenta y peinados (Hombre, Mujer, General).
    - **Descanso**: Hoteles recomendados en Elche cercanos a la finca.
    - Botón final hacia `/asistencia/`.
 
