@@ -342,7 +342,7 @@ h1, h2, h3, h4, .epic-font {
    HERO / PORTADA
    =================================================================== */
 .hero {
-  min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   justify-content: center;
