@@ -24,32 +24,32 @@ const WEDDING_CONFIG = {
   // Textos visibles
   dateDisplayText: "22 de Mayo de 2027",
   timeDisplayText: "12:00 Horas",
-  placeGeneral: "Asejar Viveros · La Hoya, Elche (Alicante)",
+  placeGeneral: "El Roal de los Bolos",
   epicTagline: "Destinados por las Nornas, unidos bajo el firmamento de los Dioses",
   epicSubtitle: "La saga de dos clanes que se funden en un solo destino",
 
   // Ubicación Principal
   venue: {
-    name: "Asejar Viveros",
-    subtitle: "El Oasis de los Dioses · La Hoya, Elche (Alicante)",
-    address: "Partida de La Hoya, Polígono 72, Parcela 83, 03294 La Hoya, Elche (Alicante)",
-    coordinates: "38°14'35.1\"N 0°46'18.8\"W",
-    lat: 38.2430805,
-    lng: -0.7718989,
-    mapsShortUrl: "https://maps.app.goo.gl/aNG3K9HyFQzcdcWY9",
-    appleMapsUrl: "https://maps.apple.com/?q=38.2430805,-0.7718989",
-    embedMapUrl: "https://maps.google.com/maps?q=38.2430805,-0.7718989&hl=es&z=15&output=embed",
-    description: "Un enclave natural rodeado de palmeras, vegetación mediterránea y espacios al aire libre donde celebraremos tanto el juramento sagrado como el gran banquete."
+    name: "El Roal de los Bolos",
+    subtitle: "El Roal de los Bolos",
+    address: "El Roal de los Bolos",
+    coordinates: "38°13'10.9\"N 0°37'47.6\"W",
+    lat: 38.2196953,
+    lng: -0.6298823,
+    mapsShortUrl: "https://maps.app.goo.gl/hiYfxqboXUqrsnhM8",
+    appleMapsUrl: "https://maps.apple.com/?q=38.2196953,-0.6298823",
+    embedMapUrl: "https://maps.google.com/maps?q=38.2196953,-0.6298823&hl=es&z=15&output=embed",
+    description: "Un enclave natural rodeado de palmeras, vegetación mediterránea y espacios al aire libre donde celebraremos tanto la ceremonia como el gran banquete."
   },
 
   // 1. Ceremonia (12:00h)
   ceremony: {
-    title: "El Juramento de Sangre y Amor",
+    title: "El Juramento de Amor",
     subtitle: "Ceremonia Civil & Bendición de los Clanes",
     time: "12:00 Horas",
-    placeName: "Asejar Viveros · Zona de la Arboleda",
-    address: "Partida de La Hoya, 03294 Elche (Alicante)",
-    mapsUrl: "https://maps.app.goo.gl/aNG3K9HyFQzcdcWY9",
+    placeName: "El Roal de los Bolos",
+    address: "El Roal de los Bolos",
+    mapsUrl: "https://maps.app.goo.gl/hiYfxqboXUqrsnhM8",
     description: "Bajo los cielos de Elche y rodeados de nuestro clan, intercambiaremos los anillos de juramento y sellaremos nuestra alianza eterna."
   },
 
@@ -58,43 +58,37 @@ const WEDDING_CONFIG = {
     title: "El Gran Festín en el Valhalla",
     subtitle: "Banquete & Fiesta de Celebración",
     time: "14:00 Horas",
-    placeName: "Asejar Viveros · Jardines Principales",
-    address: "Partida de La Hoya, 03294 Elche (Alicante)",
-    mapsUrl: "https://maps.app.goo.gl/aNG3K9HyFQzcdcWY9",
-    description: "Alzad vuestros cuernos con hidromiel y buen vino. Viandas selectas, música y fiesta para celebrar el inicio de nuestra saga."
+    placeName: "El Roal de los Bolos",
+    address: "El Roal de los Bolos",
+    mapsUrl: "https://maps.app.goo.gl/hiYfxqboXUqrsnhM8",
+    description: "Alzad vuestro elixir con hidromiel y buen vino. Viandas selectas, música y fiesta para celebrar el inicio de nuestra saga."
   },
 
   // Cronograma / Timeline
   timeline: [
     {
-      time: "11:30",
+      time: "12:00h",
       rune: "ᛉ",
-      title: "Llegada de los Clanes",
-      desc: "Bienvenida de invitados en los jardines de Asejar Viveros con bebidas refrescantes."
+      title: "La ceremonia",
+      desc: "El momento en que sellaremos nuestra unión rodeados de nuestros clanes."
     },
     {
-      time: "12:00",
+      time: "14:30h",
       rune: "ᚷ",
-      title: "El Juramento Sagrado",
-      desc: "Ceremonia de unión, votos de los novios y bendición de los anillos."
+      title: "Gran festín por nuestra unión",
+      desc: "Compartiremos mesa, brindis y un gran banquete para celebrar nuestro destino."
     },
     {
-      time: "13:00",
+      time: "16:30h",
       rune: "ᛋ",
-      title: "El Brindis de los Skalds",
-      desc: "Cóctel nupcial con aperitivos y música en vivo."
+      title: "Celebración y más sorpresas",
+      desc: "La fiesta continuará con música, alegría y algunas sorpresas para todos."
     },
     {
-      time: "14:00",
+      time: "01:00h",
       rune: "ᛟ",
-      title: "El Gran Festín",
-      desc: "Banquete principal, viandas y momentos especiales entre clanes."
-    },
-    {
-      time: "17:00",
-      rune: "ᛏ",
-      title: "El Fuego y la Danza",
-      desc: "Apertura de la barra libre, sorpresas y fiesta."
+      title: "Reservado en el centro de Elche",
+      desc: "Cerraremos la noche con quienes hayan confirmado su asistencia al reservado."
     }
   ],
 
@@ -109,9 +103,9 @@ const WEDDING_CONFIG = {
     ]
   },
 
-  // Confirmación (Asistencia antes de que termine 2026)
+  // Confirmación (Asistencia antes de que termine enero de 2027)
   rsvp: {
-    deadlineText: "Por favor, confirmad vuestra asistencia antes del 31 de Diciembre de 2026",
+    deadlineText: "Por favor, confirmad vuestra asistencia antes del 31 de Enero de 2027",
     buttonText: "Confirmar Asistencia",
     url: "asistencia/"
   }

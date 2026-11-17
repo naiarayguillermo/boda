@@ -162,7 +162,8 @@ function initFirebaseDashboard() {
       (snapshot) => {
         const list = [];
         snapshot.forEach(doc => {
-          list.push({ id: doc.id, ...doc.data() });
+          // El id real de Firestore debe prevalecer sobre el id interno del formulario.
+          list.push({ ...doc.data(), id: doc.id });
         });
         list.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
         allConfirmations = list;
@@ -200,6 +201,7 @@ function renderStats() {
   let totalAttending = 0;
   let totalAdults = 0;
   let totalChildren = 0;
+  let totalNightReservation = 0;
   let totalDeclined = 0;
   let totalAllergies = 0;
 
@@ -207,6 +209,7 @@ function renderStats() {
     if (c.attendance === "yes") {
       totalAttending += 1;
       totalAdults += 1;
+      if (c.nightReservation) totalNightReservation += 1;
 
       if (c.companions && Array.isArray(c.companions)) {
         c.companions.forEach(comp => {
@@ -215,6 +218,7 @@ function renderStats() {
             totalChildren += 1;
           } else {
             totalAdults += 1;
+            if (comp.nightReservation) totalNightReservation += 1;
           }
         });
       }
@@ -229,6 +233,7 @@ function renderStats() {
 
   document.getElementById("stat-total-resp").textContent = totalResp;
   document.getElementById("stat-total-people").textContent = totalAttending;
+  document.getElementById("stat-total-night-reservation").textContent = totalNightReservation;
   document.getElementById("stat-total-adults").textContent = totalAdults;
   document.getElementById("stat-total-children").textContent = totalChildren;
   document.getElementById("stat-total-declined").textContent = totalDeclined;
@@ -259,7 +264,7 @@ function renderTable() {
   if (filtered.length === 0) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="9" class="empty-table-state">
+        <td colspan="10" class="empty-table-state">
           <div class="empty-icon inline-svg-icon"><svg viewBox="0 0 24 24"><path d="M6 3h12v18H6zM9 7h6M9 11h6M9 15h4"/></svg></div>
           <p>No hay confirmaciones que coincidan con este filtro.</p>
         </td>
@@ -285,6 +290,14 @@ function renderTable() {
     }
 
     const totalPersons = isYes ? (1 + (item.companions ? item.companions.length : 0)) : 0;
+    const nightReservationHtml = isYes
+      ? `<div class="companions-cell">
+          <span class="badge-night-reservation ${item.nightReservation ? "active" : ""}">Titular: ${item.nightReservation ? "Sí" : "No"}</span>
+          ${(item.companions || []).filter(c => c.type === "pareja").map(c =>
+            `<span class="badge-night-reservation ${c.nightReservation ? "active" : ""}">${c.name}: ${c.nightReservation ? "Sí" : "No"}</span>`
+          ).join("")}
+        </div>`
+      : `<span style="color: var(--text-muted); font-size: 0.82rem;">—</span>`;
 
     let allergyHtml = `<span style="color: var(--text-muted); font-size: 0.82rem;">Ninguna</span>`;
     if (item.hasAllergies && item.allergiesDetails && item.allergiesDetails !== "Ninguna") {
@@ -309,6 +322,7 @@ function renderTable() {
         <td class="col-status">${statusBadge}</td>
         <td class="col-companions">${companionsHtml}</td>
         <td class="col-total"><strong>${totalPersons > 0 ? totalPersons : "—"}</strong></td>
+        <td class="col-night-reservation">${nightReservationHtml}</td>
         <td class="col-allergy">${allergyHtml}</td>
         <td class="col-dedication">${dedicationHtml}</td>
         <td class="col-date"><small style="color: var(--text-muted);">${dateStr}</small></td>
@@ -388,17 +402,19 @@ function exportToPDF() {
 
   doc.setFontSize(10);
   doc.setTextColor(120, 120, 120);
-  doc.text(`Fecha del Enlace: 22 de Mayo de 2027 · Asejar Viveros (Elche) | Generado: ${new Date().toLocaleDateString("es-ES")}`, 14, 23);
+  doc.text(`Fecha del Enlace: 22 de Mayo de 2027 · El Roal de los Bolos | Generado: ${new Date().toLocaleDateString("es-ES")}`, 14, 23);
 
-  let totalAttending = 0, totalAdults = 0, totalChildren = 0, totalDeclined = 0, totalAllergies = 0;
+  let totalAttending = 0, totalAdults = 0, totalChildren = 0, totalDeclined = 0, totalAllergies = 0, totalNightReservation = 0;
 
   allConfirmations.forEach(c => {
     if (c.attendance === "yes") {
       totalAttending += 1; totalAdults += 1;
+      if (c.nightReservation) totalNightReservation++;
       if (c.companions) {
         c.companions.forEach(comp => {
           totalAttending += 1;
           comp.type === "niño" ? totalChildren++ : totalAdults++;
+          if (comp.nightReservation) totalNightReservation++;
         });
       }
     } else { totalDeclined += 1; }
@@ -410,7 +426,7 @@ function exportToPDF() {
   doc.setFontSize(9);
   doc.setTextColor(40, 40, 40);
   doc.text(
-    `Total Respuestas: ${allConfirmations.length}  |  Asistentes Totales: ${totalAttending} (Adultos: ${totalAdults}, Niños/as: ${totalChildren})  |  No Asisten: ${totalDeclined}  |  Alergias/Dietas: ${totalAllergies}`,
+    `Total Respuestas: ${allConfirmations.length}  |  Asistentes Totales: ${totalAttending} (Adultos: ${totalAdults}, Niños/as: ${totalChildren})  |  Reservado noche: ${totalNightReservation}  |  No Asisten: ${totalDeclined}  |  Alergias/Dietas: ${totalAllergies}`,
     18, 34
   );
 
@@ -418,18 +434,24 @@ function exportToPDF() {
     const isYes = item.attendance === "yes";
     const status = isYes ? "SÍ Asiste" : "NO Asiste";
     const totalP = isYes ? (1 + (item.companions ? item.companions.length : 0)) : 0;
+    const nightPeople = isYes
+      ? [
+          `${item.fullName || "Titular"}: ${item.nightReservation ? "Sí" : "No"}`,
+          ...(item.companions || []).filter(c => c.type === "pareja").map(c => `${c.name}: ${c.nightReservation ? "Sí" : "No"}`)
+        ].join("; ")
+      : "—";
     const comps = isYes && item.companions && item.companions.length > 0
       ? item.companions.map(c => `${c.name} (${c.type === 'niño' ? 'Niño/a' : 'Adulto'})`).join(", ")
       : "-";
     const allergies = item.hasAllergies && item.allergiesDetails ? item.allergiesDetails : "Ninguna";
     const ded = item.dedication ? item.dedication : "-";
 
-    return [idx + 1, item.fullName || "-", status, comps, totalP, allergies, ded];
+    return [idx + 1, item.fullName || "-", status, comps, totalP, nightPeople, allergies, ded];
   });
 
   doc.autoTable({
     startY: 43,
-    head: [["#", "Invitado Principal", "Estado", "Acompañantes", "Total", "Alergias / Dietas", "Dedicatoria / Mensaje"]],
+    head: [["#", "Invitado Principal", "Estado", "Acompañantes", "Total", "Reservado noche", "Alergias / Dietas", "Dedicatoria / Mensaje"]],
     body: tableRows,
     theme: "striped",
     headStyles: { fillColor: [20, 26, 38], textColor: [245, 225, 151], fontSize: 9, fontStyle: "bold" },
@@ -440,8 +462,9 @@ function exportToPDF() {
       2: { cellWidth: 25, halign: "center" },
       3: { cellWidth: 65 },
       4: { cellWidth: 15, halign: "center" },
-      5: { cellWidth: 50 },
-      6: { cellWidth: 59 }
+      5: { cellWidth: 25, halign: "center" },
+      6: { cellWidth: 45 },
+      7: { cellWidth: 54 }
     }
   });
 
@@ -482,6 +505,7 @@ function initEditModal() {
     const fullName = document.getElementById("edit-fullName").value.trim();
     const dietaryDetails = document.getElementById("edit-dietaryDetails").value.trim();
     const dedication = document.getElementById("edit-dedication").value.trim();
+    const nightReservation = isYes && document.getElementById("edit-night-reservation").checked;
 
     const comps = [];
     if (isYes && compList) {
@@ -489,7 +513,12 @@ function initEditModal() {
         const nameInput = row.querySelector(".edit-comp-name");
         const typeSelect = row.querySelector(".edit-comp-type");
         if (nameInput && nameInput.value.trim()) {
-          comps.push({ name: nameInput.value.trim(), type: typeSelect ? typeSelect.value : "pareja" });
+          const type = typeSelect ? typeSelect.value : "pareja";
+          comps.push({
+            name: nameInput.value.trim(),
+            type,
+            nightReservation: type === "pareja" && Boolean(row.querySelector(".edit-comp-night-reservation")?.checked)
+          });
         }
       });
     }
@@ -497,6 +526,7 @@ function initEditModal() {
     const updatedData = {
       fullName,
       attendance: isYes ? "yes" : "no",
+      nightReservation,
       hasCompanion: comps.length > 0,
       companionsCount: comps.length,
       companions: comps,
@@ -578,18 +608,19 @@ function openEditModal(recordId) {
 
   document.getElementById("edit-dietaryDetails").value = item.allergiesDetails || "";
   document.getElementById("edit-dedication").value = item.dedication || "";
+  document.getElementById("edit-night-reservation").checked = Boolean(item.nightReservation);
 
   if (compList) {
     compList.innerHTML = "";
     if (item.companions && item.companions.length > 0) {
-      item.companions.forEach(c => addEditCompanionRow(c.name, c.type));
+      item.companions.forEach(c => addEditCompanionRow(c.name, c.type, c.nightReservation));
     }
   }
 
   modal.classList.add("active");
 }
 
-function addEditCompanionRow(name = "", type = "pareja") {
+function addEditCompanionRow(name = "", type = "pareja", nightReservation = false) {
   const compList = document.getElementById("edit-companions-list");
   if (!compList) return;
 
@@ -601,9 +632,21 @@ function addEditCompanionRow(name = "", type = "pareja") {
       <option value="pareja" ${type === 'pareja' ? 'selected' : ''}>Pareja / Adulto</option>
       <option value="niño" ${type === 'niño' ? 'selected' : ''}>Niño / Niña</option>
     </select>
+    <label class="custom-checkbox-wrapper edit-comp-night-option" style="${type === "pareja" ? "" : "display: none;"}">
+      <input type="checkbox" class="edit-comp-night-reservation" ${nightReservation ? "checked" : ""} />
+      <span class="checkbox-label-text">Reservado noche</span>
+    </label>
     <button type="button" class="btn-remove-edit-comp" title="Eliminar acompañante">&times;</button>
   `;
 
+  const typeSelect = row.querySelector(".edit-comp-type");
+  const nightOption = row.querySelector(".edit-comp-night-option");
+  const nightCheckbox = row.querySelector(".edit-comp-night-reservation");
+  typeSelect?.addEventListener("change", () => {
+    const isAdult = typeSelect.value === "pareja";
+    nightOption.style.display = isAdult ? "flex" : "none";
+    if (!isAdult) nightCheckbox.checked = false;
+  });
   row.querySelector(".btn-remove-edit-comp").addEventListener("click", () => row.remove());
   compList.appendChild(row);
 }

@@ -112,6 +112,10 @@ function initCompanionsSystem() {
               <span class="inline-svg-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 22a8 8 0 0 1 16 0M9 4 7 2m8 2 2-2"/></svg></span><span>Niño / Niña</span>
             </button>
           </div>
+          <label class="custom-checkbox-wrapper companion-night-option">
+            <input type="checkbox" class="companion-night-reservation" />
+            <span class="checkbox-label-text">¿Vendrá al reservado en la noche?</span>
+          </label>
         </div>
       </div>
     `;
@@ -119,6 +123,9 @@ function initCompanionsSystem() {
     // Manejar el toggle segmentado sin select nativo
     const typeButtons = row.querySelectorAll(".type-pill-btn");
     const hiddenVal = row.querySelector(".companion-type-val");
+    const nightOption = row.querySelector(".companion-night-option");
+    const nightCheckbox = row.querySelector(".companion-night-reservation");
+    nightOption?.classList.add("active");
 
     typeButtons.forEach(btn => {
       btn.addEventListener("click", () => {
@@ -127,6 +134,9 @@ function initCompanionsSystem() {
         if (hiddenVal) {
           hiddenVal.value = btn.getAttribute("data-type");
         }
+        const isAdult = btn.getAttribute("data-type") === "pareja";
+        nightOption?.classList.toggle("active", isAdult);
+        if (!isAdult && nightCheckbox) nightCheckbox.checked = false;
       });
     });
 
@@ -213,6 +223,7 @@ function initAsistenciaForm() {
     const formData = new FormData(form);
     const attendanceVal = formData.get("attendance") || "yes";
     const hasCompanion = document.getElementById("hasCompanion")?.checked || false;
+    const nightReservation = document.getElementById("nightReservation")?.checked || false;
     const hasAllergies = document.getElementById("hasAllergies")?.checked || false;
 
     // Recoger acompañantes
@@ -222,7 +233,12 @@ function initAsistenciaForm() {
         const name = row.querySelector(".companion-name")?.value.trim();
         const type = row.querySelector(".companion-type-val")?.value || "pareja";
         if (name) {
-          companions.push({ name, type });
+          companions.push({
+            name,
+            type,
+            nightReservation: type === "pareja"
+              && Boolean(row.querySelector(".companion-night-reservation")?.checked)
+          });
         }
       });
     }
@@ -231,6 +247,7 @@ function initAsistenciaForm() {
       id: "conf_" + Date.now() + "_" + Math.random().toString(36).substring(2, 6),
       fullName: (formData.get("fullName") || "").trim(),
       attendance: attendanceVal,
+      nightReservation: attendanceVal === "yes" && nightReservation,
       hasCompanion: hasCompanion,
       companionsCount: companions.length,
       companions: companions,
@@ -304,6 +321,15 @@ function initAsistenciaForm() {
       <div class="review-item-row">
         <span class="review-label">Acompañantes</span>
         <div class="review-val">${companionsSummary}</div>
+      </div>
+      <div class="review-item-row">
+        <span class="review-label">Reservado de noche (por persona)</span>
+        <div class="review-val review-night-list">
+          <div><strong>${data.fullName}:</strong> <span class="${data.nightReservation ? "night-yes" : "night-no"}">${data.nightReservation ? "✓ Sí" : "✕ No"}</span></div>
+          ${data.companions.filter(c => c.type === "pareja").map(c => `
+            <div><strong>${c.name}:</strong> <span class="${c.nightReservation ? "night-yes" : "night-no"}">${c.nightReservation ? "✓ Sí" : "✕ No"}</span></div>
+          `).join("")}
+        </div>
       </div>
       <div class="review-item-row">
         <span class="review-label">Alergias o Intolerancias</span>
@@ -381,7 +407,7 @@ function showSuccessModal(data) {
       msgBody.innerHTML = `
         ¡Muchas gracias, <strong>${data.fullName}</strong>!<br>
         Tu confirmación de asistencia ha quedado registrada con éxito.${companionsText}<br>
-        ¡Nos vemos el 22 de Mayo de 2027 en Asejar Viveros!
+        ¡Nos vemos el 22 de Mayo de 2027 en El Roal de los Bolos!
       `;
     } else {
       msgBody.innerHTML = `

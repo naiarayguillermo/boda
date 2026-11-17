@@ -7,12 +7,12 @@
 document.addEventListener("DOMContentLoaded", () => {
   initCountdown();
   initParticleCanvas();
+  initDynamicContent();
   initScrollAnimations();
   initNavigation();
   initBackToTop();
   initCopyToClipboard();
   initAtavioGallery();
-  initDynamicContent();
 });
 
 /**
@@ -268,7 +268,7 @@ function initBackToTop() {
   if (!btn) return;
 
   window.addEventListener("scroll", () => {
-    if (window.scrollY > 320) {
+    if (window.scrollY > 160) {
       btn.classList.add("visible");
     } else {
       btn.classList.remove("visible");

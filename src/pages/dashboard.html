@@ -70,6 +70,10 @@
             <div class="stat-label">Total Personas que Asisten</div>
             <div class="stat-value" id="stat-total-people">0</div>
           </div>
+          <div class="stat-card highlight">
+            <div class="stat-label">Total Personas en el Reservado</div>
+            <div class="stat-value" id="stat-total-night-reservation">0</div>
+          </div>
           <div class="stat-card">
             <div class="stat-label">Adultos / Parejas</div>
             <div class="stat-value" id="stat-total-adults">0</div>
@@ -117,6 +121,7 @@
                 <th class="col-status">Estado</th>
                 <th class="col-companions">Acompañantes</th>
                 <th class="col-total">Total</th>
+                <th class="col-night-reservation">Reservado noche</th>
                 <th class="col-allergy">Alergia / Intolerancia</th>
                 <th class="col-dedication">Dedicatoria</th>
                 <th class="col-date">Fecha</th>
@@ -175,6 +180,13 @@
               <span>No asistirá</span>
             </label>
           </div>
+        </div>
+
+        <div class="dash-form-group">
+          <label class="custom-checkbox-wrapper">
+            <input type="checkbox" id="edit-night-reservation" />
+            <span class="checkbox-label-text">¿Vendrá al reservado en la noche?</span>
+          </label>
         </div>
 
         <!-- SECCIÓN ACOMPAÑANTES EN EDICIÓN -->
