@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initScrollAnimations();
   initNavigation();
   initBackToTop();
+  initHeroScrollIndicator();
   initCopyToClipboard();
   initAtavioGallery();
 });
@@ -283,6 +284,18 @@ function initBackToTop() {
   });
 }
 
+function initHeroScrollIndicator() {
+  const indicator = document.getElementById("hero-scroll-indicator");
+  if (!indicator) return;
+
+  const updateVisibility = () => {
+    indicator.classList.toggle("hidden", window.scrollY > 40);
+  };
+
+  window.addEventListener("scroll", updateVisibility, { passive: true });
+  updateVisibility();
+}
+
 /**
  * 7. COPIAR AL PORTAPAPELES
  */
@@ -335,6 +348,7 @@ function initAtavioGallery() {
   let images = [];
   let currentIndex = 0;
   let lastTrigger = null;
+  let closeTimer;
 
   const renderImage = () => {
     const image = images[currentIndex];
@@ -348,7 +362,10 @@ function initAtavioGallery() {
     lightbox.classList.remove("open");
     lightbox.setAttribute("aria-hidden", "true");
     document.body.classList.remove("gallery-locked");
-    lightboxImage.removeAttribute("src");
+    clearTimeout(closeTimer);
+    closeTimer = setTimeout(() => {
+      lightboxImage.removeAttribute("src");
+    }, 250);
     if (lastTrigger) lastTrigger.focus();
   };
 
@@ -361,6 +378,7 @@ function initAtavioGallery() {
     const categoryImages = [...category.querySelectorAll(".atavio-gallery-thumb img")];
     category.querySelectorAll(".atavio-gallery-thumb").forEach((thumbnail, index) => {
       thumbnail.addEventListener("click", () => {
+        clearTimeout(closeTimer);
         images = categoryImages;
         currentIndex = index;
         lastTrigger = thumbnail;

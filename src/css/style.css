@@ -101,6 +101,10 @@ body.menu-locked {
   position: relative;
 }
 
+#historia {
+  scroll-margin-top: 60px;
+}
+
 /* Tipografía de títulos: pesos refinados y ligeros, no sobrecargados */
 h1, h2, h3, h4, .epic-font {
   font-family: var(--font-title);
@@ -1082,6 +1086,7 @@ h1, h2, h3, h4, .epic-font {
 }
 
 .atavio-lightbox-stage {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1100,6 +1105,10 @@ h1, h2, h3, h4, .epic-font {
 
 .atavio-lightbox-nav {
   flex: 0 0 auto;
+  align-self: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: 1px solid var(--border-color);
   border-radius: 50%;
   width: 2.6rem;
@@ -1107,6 +1116,8 @@ h1, h2, h3, h4, .epic-font {
   color: var(--text-bright);
   background: rgba(16, 22, 33, 0.9);
   font-size: 1.3rem;
+  line-height: 1;
+  padding: 2px 0 0 0;
   cursor: pointer;
 }
 
@@ -1115,6 +1126,17 @@ h1, h2, h3, h4, .epic-font {
   color: var(--gold-light);
   border-color: var(--gold-light);
   outline: none;
+}
+
+.atavio-lightbox-prev {
+  position: relative;
+  right: 2px;
+  padding-right: 3px;
+}
+
+.atavio-lightbox-next {
+  position: relative;
+  left: 2px;
 }
 
 .atavio-lightbox-counter {
@@ -1316,6 +1338,57 @@ body.gallery-locked {
   margin-bottom: 0;
 }
 
+.hero-scroll-indicator {
+  position: absolute;
+  bottom: 1.8rem;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  color: var(--gold-light);
+  transform: translateX(-50%);
+  opacity: 0.85;
+  transition: opacity 0.45s ease, visibility 0.45s ease;
+  animation: heroScrollBounce 1.8s ease-in-out infinite;
+  z-index: 2;
+}
+
+.hero-scroll-indicator:hover,
+.hero-scroll-indicator:focus-visible {
+  color: var(--text-bright);
+  opacity: 1;
+}
+
+.hero-scroll-indicator.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.hero-scroll-indicator svg {
+  width: 28px;
+  height: 28px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+  filter: drop-shadow(0 0 8px var(--gold-glow));
+}
+
+@keyframes heroScrollBounce {
+  0%, 100% { transform: translate(-50%, 0); }
+  50% { transform: translate(-50%, 9px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-scroll-indicator {
+    animation: none;
+  }
+}
+
 .btn-cta-giant {
   font-size: clamp(0.95rem, 3vw, 1.1rem);
   padding: 1.15rem 2.5rem;
@@ -1508,6 +1581,8 @@ body.gallery-locked {
   .atavio-lightbox-nav {
     width: 2.25rem;
     height: 2.25rem;
+    align-self: center;
+    justify-self: center;
   }
   .atavio-lightbox-prev {
     grid-column: 1;
