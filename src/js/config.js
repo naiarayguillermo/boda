@@ -96,10 +96,14 @@ const WEDDING_CONFIG = {
   stay: {
     title: "Aposentos & Descanso",
     subtitle: "Hoteles recomendados en Elche",
-    description: "Recomendaciones de hoteles cercanos en Elche para descansar tras la celebración. Próximamente indicaremos las tarifas especiales y teléfonos de reserva:",
+    description: "Recomendaciones de alojamiento en Elche para descansar tras la celebración:",
     hotels: [
-      { name: "Hotel Huerto del Cura (Elche)", note: "A 10 min de la finca" },
-      { name: "Hotel Jardín Milenio (Elche)", note: "A 10 min de la finca" }
+      { name: "Hotel AG Express Elche", note: "A-70 · Aproximadamente 10 km de la finca" },
+      { name: "B&B HOTEL Elche", note: "Carrer Almansa, 62 · Aproximadamente 10 km de la finca" },
+      { name: "Hotel Port Elche", note: "Carrer de Miguel Servet, 25 · Aproximadamente 8 km de la finca" },
+      { name: "Hotel YIT Ciudad de Elche", note: "Carrer Petrer, 37 · Aproximadamente 10 km de la finca" },
+      { name: "Hotel Elche Centro, Affiliated by Meliá", note: "Avinguda de Joan Carles I, 7 · Aproximadamente 8 km de la finca" },
+      { name: "Hostal María", note: "Carrer Ramón Vicente Serrano, 2 · Aproximadamente 8 km de la finca" }
     ]
   },
 
